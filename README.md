@@ -22,7 +22,6 @@ const App = defineComponent(() => {
   const count = ref(0)
   const handleClick = () => count.value += 1
 
-  console.log(count)
   return (
     <>
       <p>Click times: {count}</p>
@@ -37,11 +36,10 @@ mount('#app', App)
 ### Name and age
 ```tsx
 import {
-  ref,
   defineComponent,
+  reactive,
   mount
 } from './reactivity'
-import { computed, reactive } from './stores'
 
 const App = defineComponent(() => {
   const info = reactive<{
