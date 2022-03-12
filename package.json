@@ -6,7 +6,8 @@
     "author": "Hydrogen <3038094028@qq.com>",
     "license": "MIT",
     "scripts": {
-        "dev": "vite"
+        "dev": "vite",
+        "build": "vite build"
     },
     "devDependencies": {
         "typescript": "^4.6.2",
