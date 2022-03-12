@@ -77,3 +77,6 @@ const App = defineComponent(() => {
 
 mount('#app', App)
 ```
+
+## License
+MIT License, Copyright (c) Hydrogen
