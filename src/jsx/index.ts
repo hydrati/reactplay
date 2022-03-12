@@ -113,7 +113,7 @@ export function createTextNode<T>(val: Value<T>) {
   }
 }
 
-export const Fragment = Symbol('Exact.Fragment')
+export const Fragment = Symbol('JSX.Fragment')
 
 export function mount(el: string, node: Node | Functional) {
   if (typeof node === 'function') {
