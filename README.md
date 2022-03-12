@@ -6,6 +6,7 @@ Reactivity like Vue 3.x
 - `Reactive` Object based on ES6 `Proxy`
 - `Ref` and `Computed` Objects
 - Functional Component
+- Partly Composition API
 - Output Native DOM Node
 
 ## Examples
