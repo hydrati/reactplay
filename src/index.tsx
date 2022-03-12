@@ -1,9 +1,8 @@
 import {
-  ref,
   defineComponent,
+  reactive,
   mount
 } from './reactivity'
-import { computed, reactive } from './stores'
 
 const App = defineComponent(() => {
   const info = reactive<{
@@ -24,10 +23,10 @@ const App = defineComponent(() => {
 
   return (
     <>
-      <p>Hi, My name is {() => info.name}. I'm {() => info.age} years old.</p>
+      <p>Hi, My name is {() => info.name /* Make it reactive */}. I'm {() => info.age} years old.</p>
       <p>Name: <input 
           oninput={handleInputName}
-          value={info.name}
+          value={info.name /* This is not reactive */}
         />
       </p>
       <p>Age: <input 
