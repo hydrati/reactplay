@@ -1,0 +1,15 @@
+{
+    "name": "reactivity",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/hyroge/reactivity.git",
+    "author": "Hydrogen <3038094028@qq.com>",
+    "license": "MIT",
+    "scripts": {
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "typescript": "^4.6.2",
+        "vite": "^2.8.6"
+    }
+}
