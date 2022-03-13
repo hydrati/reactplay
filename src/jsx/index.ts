@@ -1,4 +1,4 @@
-import { Functional } from './component';
+import { ComponentFactory, Functional } from './component';
 import { Computed, isComputed } from '../stores/computed';
 import { effect } from '../stores/deps';
 import { isReactive } from '../stores/reactive';
@@ -11,9 +11,20 @@ export type Lazy<T> = () => T
 export type Value<T> = T | Ref<T> | Computed<T>
 export type Child = (Node | Node[] | Value<string | number> | (() => Value<string | number>))
 
-export function h<T = {}>(
-  tag: string | typeof Fragment | Functional,
-  props: Props<T> | null,
+
+export function h<T>(
+  tag: ComponentFactory<T>,
+  props: T | null,
+  ...children: Child[]
+): Node 
+export function h<T>(
+  tag: string | typeof Fragment,
+  props: Props<T> | T | null,
+  ...children: Child[]
+): Node 
+export function h<T>(
+  tag: string | typeof Fragment | ComponentFactory<T>,
+  props: Props<T> | T | null,
   ...children: Child[]
 ): Node {
   const p: Props<T> = props ?? {} as Props<T>
@@ -21,7 +32,7 @@ export function h<T = {}>(
   if (tag === Fragment) {
     return createFragment(children)
   } else if (typeof tag === 'function') {
-    return createFunctional(tag, p, children)
+    return createComponent(tag, p as T, children)
   } else {
     return createNativeElement(tag, p, children)
   }
@@ -63,10 +74,9 @@ export function createFragment(children: Child[]) {
   return node
 }
 
-export function createFunctional<T>(f: Functional<T>, props: Props<T>, children: Child[]) {
-  return f({
-    children: () => createFragment(children),
-    props
+export function createComponent<T>(f: ComponentFactory<T>, props: T, children: Child[]) {
+  return f(props)({
+    children: () => createFragment(children)
   })
 }
 
@@ -115,9 +125,9 @@ export function createTextNode<T>(val: Value<T>) {
 
 export const Fragment = Symbol('JSX.Fragment')
 
-export function mount(el: string, node: Node | Functional) {
+export function mount(el: string, node: Node | ComponentFactory<{}>) {
   if (typeof node === 'function') {
-    node = createFunctional(node, {}, [])
+    node = createComponent(node, {}, [])
   }
   document.querySelector(el)?.appendChild(node)
 }

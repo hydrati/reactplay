@@ -2,10 +2,12 @@ import {
   defineComponent,
   reactive,
   mount,
-  watch
+  watch,
+  ref,
+  Ref
 } from './reactivity'
 
-const App = defineComponent(() => {
+const NameInput = defineComponent(() => {
   const info = reactive<{
     name: string,
     age: number
@@ -43,4 +45,28 @@ const App = defineComponent(() => {
   )
 })
 
-mount('#app', App)
+const Count = defineComponent(() => {
+  const count = ref(0)
+  const handleClick = () => count.value += 1
+
+  return (
+    <>
+      <p>Click times: {count}</p>
+      <button onclick={handleClick}>Click me! {count}</button>
+    </>
+  )
+})
+
+const Text = defineComponent<{
+  name: string
+}>((ctx) => (<h1>{ctx.props.name}</h1>))
+
+const App = defineComponent(() => (
+  <>
+    <Text name="hello" />
+    <Count />
+    <NameInput />
+  </>
+))
+
+mount('#app', <App />)
