@@ -102,6 +102,7 @@ class EffectStack {
       for (const s of store) {
         s.remove(f)
       }
+      this.#mark.delete(f)
     }
   }
 }
