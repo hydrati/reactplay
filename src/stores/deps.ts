@@ -6,12 +6,12 @@ import { Ref, isRef, ref as makeRef } from './ref'
 export type Effect = () => void
 export type Watcher<T> = (oldValue: Dereactive<T>, newValue: Dereactive<T>, onStop: (f: Effect) => void) => void
 export type WatchEffectFn = (onInvalidate: (f: Effect) => void) => void
-export type Reactive<T> = Ref<T> | Computed<T> | Lazy<T> | T
+export type Reactive<T> = Ref<T> | Computed<T> | Lazy<T>
 export type Dereactive<T> = (
   T extends Ref<infer P> ? P :
   T extends Computed<infer P> ? P :
   T extends Lazy<infer P> ? P : 
-  T extends (infer P)[] ? Dereactive<P> : T
+  T extends [infer P] | (infer P)[] ? Dereactive<P> : T
 )
 
 class EffectStack {
@@ -47,8 +47,8 @@ class EffectStack {
     }
   }
 
-  watch<T extends Reactive<unknown> | Reactive<unknown>[]>(f: T, effect: Watcher<T>, deep = true): Effect {
-    const watchable: (Computed<unknown>)[] = (Array.isArray(f) ? f : [f]).map(ref => {
+  watch<T extends ([Reactive<unknown>] | Reactive<unknown>[])>(f: T, effect: Watcher<T>, deep = true): Effect {
+    const watchable = (f as Reactive<unknown>[]).map(ref => {
       if (isRef(ref) || isComputed(ref)) {
         return ref
       } else if (typeof ref === 'function') {
@@ -67,7 +67,7 @@ class EffectStack {
         }
       }
       return computed(() => ref)
-    })
+    }) as Computed<unknown>[]
 
     let old: any = null
     return this.watchEffect(o => {

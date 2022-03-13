@@ -22,6 +22,7 @@ import {
 } from './reactivity'
 
 const NameInput = defineComponent(() => {
+  
   const info = reactive<{
     name: string,
     age: number
@@ -30,7 +31,10 @@ const NameInput = defineComponent(() => {
     age: 20
   })
 
-  watch([() => info.name, () => info.age], (old, newVal) => {
+  watch([
+    () => info.name,
+    () => info.age
+  ], (old, newVal) => {
     console.log(old, newVal, "watch")
   })
 
