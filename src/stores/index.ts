@@ -1,10 +1,13 @@
 export {
   ref,
-  isRef
+  isRef,
+  getRefStore
 } from './ref'
 
 export type {
-  Ref
+  Ref,
+  ShallowRefStore,
+  RefStore
 } from './ref'
 
 export {
@@ -12,7 +15,9 @@ export {
   shallowReactive,
   isReactive,
   toRefs,
-  shallowToRefs
+  shallowToRefs,
+  getReactiveStore,
+  getReactiveTarget
 } from './reactive'
 
 export {
@@ -25,10 +30,13 @@ export type {
 
 export {
   computed,
-  isComputed
+  isComputed,
+  getComputedStore
 } from './computed'
 
 export type {
   Computed,
   ComputedFn
 } from './computed'
+
+export * from './deps'
