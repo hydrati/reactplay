@@ -61,7 +61,7 @@ export function patchChildren(node: Node, children: Child[]): Node {
   return node
 }
 
-export function createNativeElement<T = {}>(tag: string, props: Props<T>, children: Child[]) {
+export function createNativeElement<T = {}>(tag: string, props: Props<T>, children: Child[]): HTMLElement {
   const node = document.createElement(tag)
   patchProps(node, props)
   patchChildren(node, children)
@@ -80,15 +80,22 @@ export function createComponent<T>(f: ComponentFactory<T>, props: T, children: C
   })
 }
 
-export function patchProps<T>(node: any, props: Props<T>): Node {
+export function patchProps<T>(node: HTMLElement, props: Props<T>): HTMLElement {
   for (const [key, value] of Object.entries(props)) {
-    if (isComputed(value) || isRef(value)) {
-      effect(() => {
-        const k = key
-        node[k] = (value as Ref<unknown>).value
-      })
+    if (key.startsWith('on')) {
+      const finalName = key.replace(/Capture$/, "");
+      const useCapture = key !== finalName;
+      const eventName = finalName.toLowerCase().substring(2);
+      node.addEventListener(eventName, value as EventListenerOrEventListenerObject, useCapture);
     } else {
-      node[key] = value
+      if (isComputed(value) || isRef(value)) {
+        effect(() => {
+          const k = key
+          node.setAttribute(k, toText((value as Ref<unknown>).value))
+        })
+      } else {
+        node.setAttribute(key, toText(value))
+      }
     }
   }
 

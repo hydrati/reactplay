@@ -32,12 +32,12 @@ const NameInput = defineComponent(() => {
     <>
       <p>Hi, My name is {() => info.name /* Make it reactive */}. I'm {() => info.age} years old.</p>
       <p>Name: <input 
-          oninput={handleInputName}
+          onInput={handleInputName}
           value={info.name /* This is not reactive */}
         />
       </p>
       <p>Age: <input 
-          oninput={handleInputAge} 
+          onInput={handleInputAge} 
           value={info.age}
         />
       </p>
@@ -52,7 +52,7 @@ const Count = defineComponent(() => {
   return (
     <>
       <p>Click times: {count}</p>
-      <button onclick={handleClick}>Click me! {count}</button>
+      <button onClick={handleClick}>Click me! {count}</button>
     </>
   )
 })
