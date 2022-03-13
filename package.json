@@ -7,7 +7,8 @@
     "license": "MIT",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "serve": "vite serve"
     },
     "devDependencies": {
         "typescript": "^4.6.2",
