@@ -2,6 +2,8 @@
 Reactivity like Vue 3.x
 
 ## Features
+- Typescript JSX Support
+- Components and Fragment
 - Dependency-Collect Reactivity
 - `Reactive` Object based on ES6 `Proxy`
 - `Ref` and `Computed` Objects
@@ -76,6 +78,20 @@ const App = defineComponent(() => {
 })
 
 mount('#app', App)
+```
+
+### Functional Component
+```tsx
+const Text = defineComponent<{
+  name: string
+}>((ctx) => (<h1>{ctx.props.name}</h1>))
+
+const App = defineComponent(() => (
+  <>
+    <Text name="hello" />
+  </>
+))
+
 ```
 
 ## License
