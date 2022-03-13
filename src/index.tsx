@@ -4,7 +4,6 @@ import {
   mount,
   watch,
   ref,
-  Ref
 } from './reactivity'
 
 const NameInput = defineComponent(() => {
