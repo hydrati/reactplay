@@ -1,3 +1,4 @@
+
 import { Lazy } from '../jsx'
 import { computed, Computed, ComputedFn, isComputed } from './computed'
 import { getReactiveStore, isReactive, isReadonly } from './reactive'
@@ -6,13 +7,17 @@ import { Ref, isRef, ref as makeRef } from './ref'
 export type Effect = () => void
 export type Watcher<T> = (oldValue: Dereactive<T>, newValue: Dereactive<T>, onStop: (f: Effect) => void) => void
 export type WatchEffectFn = (onInvalidate: (f: Effect) => void) => void
-export type Reactive<T> = Ref<T> | Computed<T> | Lazy<T>
+export type Reactive<T> = Ref<T> | Computed<T> | Lazy<T> | T
 export type Dereactive<T> = (
   T extends Ref<infer P> ? P :
   T extends Computed<infer P> ? P :
   T extends Lazy<infer P> ? P : 
-  T extends [infer P] | (infer P)[] ? Dereactive<P> : T
+  T extends unknown[] ? DereactiveMap<T> : T
 )
+
+export type DereactiveMap<T> = {
+  [K in keyof T]: Dereactive<T[K]>
+}
 
 class EffectStack {
   #stack: Effect[] = []
@@ -48,7 +53,7 @@ class EffectStack {
   }
 
   watch<T extends ([Reactive<unknown>] | Reactive<unknown>[])>(f: T, effect: Watcher<T>, deep = true): Effect {
-    const watchable = (f as Reactive<unknown>[]).map(ref => {
+    const watchable = (f as any[]).map(ref => {
       if (isRef(ref) || isComputed(ref)) {
         return ref
       } else if (typeof ref === 'function') {
@@ -73,11 +78,7 @@ class EffectStack {
     return this.watchEffect(o => {
       const newVal: any = watchable.map(v => v.value)
       if (old != null) {
-        if (watchable.length != 1) {
-          effect(old, newVal, o)
-        } else {
-          effect(old[0], newVal[0], o)
-        }
+        effect(old, newVal, o)
       }
 
       old = newVal
