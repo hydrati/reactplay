@@ -1,7 +1,8 @@
 import {
   defineComponent,
   reactive,
-  mount
+  mount,
+  watch
 } from './reactivity'
 
 const App = defineComponent(() => {
@@ -11,6 +12,10 @@ const App = defineComponent(() => {
   }>({
     name: "John",
     age: 20
+  })
+
+  watch([() => info.name, () => info.age], (old, newVal) => {
+    console.log(old, newVal, "watch")
   })
 
   const handleInputName = (ev: InputEvent) => {
