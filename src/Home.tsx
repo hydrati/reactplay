@@ -37,17 +37,19 @@ const NameInput = defineComponent(() => {
   )
 })
 
-const Count = defineComponent(() => {
-  const count = ref(0)
-  const handleClick = () => count.value += 1
+const Count = defineComponent(
+  () => {
+    const count = ref(0)
+    const handleClick = () => count.value += 1
 
-  return (
-    <>
-      <p>Click times: {count}</p>
-      <button onClick={handleClick}>Click me! {count}</button>
-    </>
-  )
-})
+    return (
+      <>
+        <p>Click times: {count}</p>
+        <button onClick={handleClick}>Click me! {count}</button>
+      </>
+    )
+  }
+)
 
 const Text = defineComponent<{
   name: string
