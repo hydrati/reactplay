@@ -1,7 +1,6 @@
 import { ComponentFactory, Functional } from './component';
 import { Computed, isComputed } from '../store/computed';
-import { Effect, effect, watchEffect, WatchEffectFn } from '../store/deps';
-import { isReactive } from '../store/reactive';
+import { Effect, watchEffect } from '../store/deps';
 import { VFragment, createFragment } from './fragment'
 import { isRef, Ref } from '../store/ref';
 

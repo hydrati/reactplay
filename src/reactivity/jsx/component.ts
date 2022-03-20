@@ -1,5 +1,4 @@
-import { Effect } from "../store/deps"
-import { Props } from "."
+
 
 export interface Functional<TProps> {
   (ctx: ComponentContext<TProps>): Node

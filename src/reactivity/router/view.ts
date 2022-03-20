@@ -1,6 +1,4 @@
-import { Child, createFragment, createNativeElement, patchChildren } from "../jsx";
-import { RefImpl } from "../store/ref";
-
+import { Child, patchChildren } from "../jsx";
 
 export class RouterFragment extends HTMLElement {
   #lock = false
@@ -12,7 +10,6 @@ export class RouterFragment extends HTMLElement {
 
   #clean() {
     this.#fragment.replaceChildren()
-    /// console.log('clean', this.#fragment)
   }
 
   #patch(n: Child[]) {

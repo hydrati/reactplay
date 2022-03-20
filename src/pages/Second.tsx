@@ -1,11 +1,7 @@
-import { Route } from './index.router'
+import { Route } from '../index.router'
 import {
   defineComponent,
-  reactive,
-  mount,
-  watch,
-  ref,
-} from './reactivity'
+} from '../reactivity'
 
 export default defineComponent(() => {
   return <>

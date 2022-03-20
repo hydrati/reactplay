@@ -81,7 +81,6 @@ export class Router {
 
   async refresh() {
     if (!await this.#redirect(location.hash.slice(1))) {
-      // console.log('not found!', location.hash, this, this.onnotfound)
       this.onnotfound?.(this.to.bind(this))
       
     }
@@ -94,7 +93,6 @@ export class Router {
 
   useHook() {
     window.addEventListener('hashchange', async (ev) => {
-      // console.log(ev)
       await this.refresh()
     })
   }
