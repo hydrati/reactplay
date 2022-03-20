@@ -5,7 +5,7 @@ export default defineConfig({
     jsx: 'transform',
     jsxFactory: '__JSX__h',
     jsxFragment: '__JSX__Fragment',
-    jsxInject: `import {h as __JSX__h,Fragment as __JSX__Fragment} from '/src/jsx'`
+    jsxInject: `import {h as __JSX__h,Fragment as __JSX__Fragment} from '/src/reactivity'`
   },
   build: {
     // lib: {
