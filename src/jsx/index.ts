@@ -1,8 +1,11 @@
 import { ComponentFactory, Functional } from './component';
-import { Computed, isComputed } from '../stores/computed';
-import { effect } from '../stores/deps';
-import { isReactive } from '../stores/reactive';
-import { isRef, Ref } from '../stores/ref';
+import { Computed, isComputed } from '../store/computed';
+import { Effect, effect, watchEffect, WatchEffectFn } from '../store/deps';
+import { isReactive } from '../store/reactive';
+import { VFragment, createFragment } from './fragment'
+import { isRef, Ref } from '../store/ref';
+
+export { VFragment, createFragment }
 
 export type Props<T = Record<PropertyKey, unknown>> = {
   readonly [K in keyof T]: Value<T[K]>
@@ -10,7 +13,6 @@ export type Props<T = Record<PropertyKey, unknown>> = {
 export type Lazy<T> = () => T
 export type Value<T> = T | Ref<T> | Computed<T>
 export type Child = (Node | Node[] | Value<string | number> | (() => Value<string | number>))
-
 
 export function h<T>(
   tag: ComponentFactory<T>,
@@ -23,18 +25,21 @@ export function h<T>(
   ...children: Child[]
 ): Node 
 export function h<T>(
-  tag: string | typeof Fragment | ComponentFactory<T>,
+  tag: string | typeof Fragment | ComponentFactory<T> | Node,
   props: Props<T> | T | null,
   ...children: Child[]
 ): Node {
   const p: Props<T> = props ?? {} as Props<T>
 
   if (tag === Fragment) {
-    return createFragment(children)
+    // return (createFragment(children))
+    return (createFragment(children))
   } else if (typeof tag === 'function') {
-    return createComponent(tag, p as T, children)
+    return (createComponent(tag, p as T, children))
+  } else if (tag instanceof Node) {
+    return (tag)
   } else {
-    return createNativeElement(tag, p, children)
+    return (createNativeElement(tag, p, children))
   }
 }
 
@@ -68,11 +73,11 @@ export function createNativeElement<T = {}>(tag: string, props: Props<T>, childr
   return node
 }
 
-export function createFragment(children: Child[]) {
-  const node = document.createDocumentFragment()
-  patchChildren(node, children)
-  return node
-}
+// export function createFragment(children: Child[]) {
+//   const node = document.createDocumentFragment()
+//   patchChildren(node, children)
+//   return node
+// }
 
 export function createComponent<T>(f: ComponentFactory<T>, props: T, children: Child[]) {
   return f(props)({
@@ -88,11 +93,19 @@ export function patchProps<T>(node: HTMLElement, props: Props<T>): HTMLElement {
       const eventName = finalName.toLowerCase().substring(2);
       node.addEventListener(eventName, value as EventListenerOrEventListenerObject, useCapture);
     } else {
+      if (key.startsWith('v-')) {
+        if (key == 'v-ref' && isRef(value)) {
+          (value as Ref<Node | null>).value = node;
+          (props as any)[key] = undefined
+          continue
+        }
+      }
+
       if (isComputed(value) || isRef(value)) {
-        effect(() => {
-          const k = key
+        const k = key
+        autoDisposeEffect(() => { 
           node.setAttribute(k, toText((value as Ref<unknown>).value))
-        })
+        }, node)
       } else {
         node.setAttribute(key, toText(value))
       }
@@ -112,22 +125,42 @@ export function toText(val: any): string {
   return text
 }
 
-export function createTextNode<T>(val: Value<T>) {
+function _createTextNode<T>(val: Value<T>) {
   if (isRef(val) || isComputed(val)) {
     const n = document.createTextNode("")
-    effect(() => {
+    autoDisposeEffect(() => {
       n.textContent = toText((val as Ref<unknown>).value)
-    })
+    }, n)
     return n
   } else if (typeof val === 'function') {
     const n = document.createTextNode("")
-    effect(() => {
+    autoDisposeEffect(() => {
       n.textContent = toText(val())
-    })
+    }, n)
     return n
   } else {
     return document.createTextNode(toText(val))
   }
+}
+
+export function createTextNode<T>(val: Value<T>) {
+  return (_createTextNode(val))
+}
+
+
+export function autoDisposeEffect(f: Effect, node: Node) {
+  let once = false
+  
+  
+  const dispose = watchEffect((i) => {
+    if (node.parentElement == null && once) {
+      dispose()
+    }
+    if (!once) once = true
+    f()
+  })
+
+
 }
 
 export const Fragment = Symbol('JSX.Fragment')
@@ -136,7 +169,8 @@ export function mount(el: string, node: Node | ComponentFactory<{}>) {
   if (typeof node === 'function') {
     node = createComponent(node, {}, [])
   }
-  document.querySelector(el)?.appendChild(node)
+  document.querySelector(el)?.append(node)
+  // console.log('append', node)
 }
 
 export * from './component'

@@ -97,6 +97,7 @@ class EffectStack {
   }
 
   clear(f: Effect) {
+    console.log('clear effect', f)
     const store = this.#mark.get(f)
     if (store !== undefined) {
       for (const s of store) {

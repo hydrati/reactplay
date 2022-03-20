@@ -1,4 +1,4 @@
-import { Effect } from "../stores/deps"
+import { Effect } from "../store/deps"
 import { Props } from "."
 
 export interface Functional<TProps> {
@@ -6,7 +6,7 @@ export interface Functional<TProps> {
 }
 
 export interface ComponentContext<TProps> {
-  props: TProps
+  props: TProps & JSX.HTMLAttributes
   slots: Slots
 }
 
@@ -16,7 +16,7 @@ export interface Slots {
 }
 
 export interface ComponentFactory<TProps> {
-  (props: TProps): (slots: Slots) => Node
+  (props: TProps & JSX.HTMLAttributes): (slots: Slots) => Node
 }
 
 export function defineComponent<T = {}>(f: Functional<T>): ComponentFactory<T> {

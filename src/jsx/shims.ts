@@ -1,9 +1,9 @@
-import type { Reactive } from "../stores";
-import { Slots } from "./component";
+import type { Reactive, Ref } from "../store";
+import { ComponentFactory, Functional, Slots } from "./component";
 
 declare global {
   module JSX {  
-    // type Element = Node | HTMLElement | ((slots: Slots) => Node) | Functional<unknown>
+    type Element = Node | HTMLElement | ((slots: Slots) => Node) | ComponentFactory<any> | (() => JSX.Element) | any | HTMLElement
   
     type Lazy<T> = () => T
     
@@ -38,7 +38,11 @@ declare global {
     type GenericEventHandler = EventHandler<Event>;
     type PointerEventHandler = EventHandler<PointerEvent>;
   
-    interface DOMAttributes {
+    interface VAttributes {
+        'v-ref'?: Ref<Node | null>
+    }
+
+    interface DOMAttributes extends VAttributes {
         children?: ComponentChildren[] | ComponentChildren;
   
         // Image Events
