@@ -1,9 +1,16 @@
-import { useSignal, effect } from './reactive'
+import { useSignal, useEffect } from './reactive'
 
 const count = useSignal(0)
 
-effect(() => console.log('new count', count.value), {
-  onNotify: console.log,
+const stop = useEffect(() => {
+  console.log('new count', count.value)
+  if (count.value >= 3) {
+    console.log('stop!')
+    stop()
+  }
 })
 
+count.value += 1
+count.value += 1
+count.value += 1
 count.value += 1
