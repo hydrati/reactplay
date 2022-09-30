@@ -42,6 +42,7 @@ export function createMemo<T>(getter: () => T): Memo<T> {
       track(memo, 'value')
       return value
     },
+    set value(_) {},
   }
 
   setSymbolTag(memo, kMemo)

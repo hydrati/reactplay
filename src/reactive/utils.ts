@@ -37,6 +37,24 @@ export function syncEffectExecute<T>(eff: Effect<T>): T {
   return eff.effect()
 }
 
+export interface Value<T> {
+  readonly value: T
+}
+
+export function useValue<T>(val: Value<T>): T {
+  return val.value
+}
+
+export interface ValueMut<T> {
+  value: T
+}
+
+export function setValue<T>(v: ValueMut<T>, fn: (value: T) => T): T {
+  const newVal = fn(v.value)
+  v.value = newVal
+  return newVal
+}
+
 export function traverse<T>(value: T, history: Set<any> = new Set()): T {
   if (typeof value !== 'object' || value == null || history.has(value)) {
     return value

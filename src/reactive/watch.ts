@@ -91,8 +91,6 @@ export function useWatch<T>(
     schedule(eff)
   }
 
-  console.log(eff)
-
   return stop
 }
 

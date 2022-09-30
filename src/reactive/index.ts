@@ -29,6 +29,7 @@ export {
 } from './reactive'
 export { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
 export { useWatch, useEffect } from './watch'
+export { useValue, setValue } from './utils'
 
 // Type Export
 
@@ -39,7 +40,7 @@ export type {
   UseEffectOptions,
 } from './watch'
 export type { EffectScope } from './scope'
-export type { Optional } from './utils'
+export type { Optional, Value, ValueMut } from './utils'
 export type {
   Effect,
   EffectFn,
