@@ -2,7 +2,7 @@ import { useSignal, useEffect, useScope, useWatch } from './reactive'
 
 console.clear()
 
-const count = useSignal(0)
+const count = useSignal<number>(0)
 
 const stop = useScope(() => {
   useEffect((_, stop) =>

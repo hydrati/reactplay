@@ -59,10 +59,9 @@ export function useWatch<T>(
   }
 
   const emit = (): void => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const newValue = execute(eff)!
+    const newValue = execute(eff) as any
 
-    if (hasChanged(oldValue, newValue)) {
+    if (hasChanged(oldValue, newValue) && newValue != null) {
       onInvalidate?.()
       onInvalidate = undefined
 
