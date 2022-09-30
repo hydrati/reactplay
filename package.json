@@ -11,7 +11,17 @@
         "serve": "vite serve"
     },
     "devDependencies": {
-        "typescript": "^4.6.2",
-        "vite": "^2.8.6"
+        "@typescript-eslint/eslint-plugin": "^5.0.0",
+        "@typescript-eslint/parser": "^5.38.1",
+        "eslint": "^8.0.1",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-config-standard-with-typescript": "^23.0.0",
+        "eslint-plugin-import": "^2.25.2",
+        "eslint-plugin-n": "^15.0.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "eslint-plugin-promise": "^6.0.0",
+        "prettier": "^2.7.1",
+        "typescript": "^4.8.4",
+        "vite": "^3.1.4"
     }
 }
