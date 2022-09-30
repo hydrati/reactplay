@@ -2,7 +2,8 @@ import { notify, track } from './effect'
 import { getReactiveRaw } from './reactive'
 import { hasChanged, setSymbolTag, setToStringTag } from './utils'
 
-const kSignal = Symbol('kSignal')
+export const kSignal = Symbol('kSignal')
+export const kSignalRaw = Symbol('kSignalRaw')
 
 export interface Signal<T> {
   value: T
@@ -12,6 +13,14 @@ export function isSignal(sig: any): boolean {
   return typeof sig === 'object' && sig[kSignal] === true
 }
 
+export function getSignalRaw<T>(sig: Signal<T>): T {
+  if (!isSignal(sig)) {
+    throw new TypeError('is not a signal')
+  }
+
+  return (sig as any)[kSignalRaw]
+}
+
 export function useSignal<T>(initalValue: T): Signal<T> {
   return createSignal(initalValue)
 }
@@ -19,9 +28,12 @@ export function useSignal<T>(initalValue: T): Signal<T> {
 export function createSignal<T>(initalValue: T): Signal<T> {
   let value = initalValue
 
-  const sig: Signal<T> = {
+  const sig = {
     get value() {
       track(sig, 'value')
+      return value
+    },
+    get [kSignalRaw]() {
       return value
     },
     set value(newValue: T) {
@@ -42,8 +54,11 @@ export function toRef<T extends object, K extends keyof T>(
   obj: T,
   key: K
 ): Signal<T[K]> {
-  const sig: Signal<T[K]> = {
+  const sig = {
     get value() {
+      return obj[key]
+    },
+    get [kSignalRaw]() {
       return obj[key]
     },
     set value(newValue: T[K]) {

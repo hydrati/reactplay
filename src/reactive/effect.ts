@@ -51,7 +51,7 @@ export function schedule<T>(eff: Effect<T>, op: number): void {
   }
 }
 
-export function execute<T>(eff: Effect<T>): Optional<T> {
+export function execute<T>(eff: Effect<T>): T {
   cleanup(eff)
 
   const oldShouldTrack = shouldTrack
@@ -60,7 +60,7 @@ export function execute<T>(eff: Effect<T>): Optional<T> {
   activeEffect = eff
   effectStack.push(eff)
 
-  const returnValue: Optional<T> = eff.effect()
+  const returnValue: T = eff.effect()
 
   shouldTrack = oldShouldTrack
 

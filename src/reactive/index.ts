@@ -1,4 +1,11 @@
-export { useRefs, useSignal, toRef, toRefs, isSignal } from './signal'
+export {
+  useRefs,
+  useSignal,
+  getSignalRaw,
+  toRef,
+  toRefs,
+  isSignal,
+} from './signal'
 export {
   effect,
   execute,
