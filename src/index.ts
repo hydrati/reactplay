@@ -1,4 +1,4 @@
-import { useSignal, useEffect, useScope, useWatch } from './reactive'
+import { useSignal, useEffect, useScope, useWatch, usePeek } from './reactive'
 
 console.clear()
 
@@ -10,7 +10,7 @@ const stop = useScope(() => {
   )
 
   useWatch(
-    () => count.value,
+    () => usePeek(() => count.value),
     (oldValue, newValue) => console.log(`${oldValue} + 1 = ${newValue}`)
   )
 })

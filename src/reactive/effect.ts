@@ -61,9 +61,7 @@ export function execute<T>(eff: Effect<T>): Optional<T> {
   activeEffect = eff
   effectStack.push(eff)
 
-  const returnValue = (eff.options?.executor ?? syncEffectExecute)?.(
-    eff
-  ) as Optional<T>
+  const returnValue = (eff.options?.executor ?? syncEffectExecute)?.(eff)
 
   shouldTrack = oldShouldTrack
 
@@ -138,15 +136,20 @@ function extractBucket<T extends Target>(
   }
 }
 
+let globalShouldNotify = true
+
 export function notify<T extends Target>(
   target: T,
   key: any,
   op: number = NotifyOps.Set,
   newIndex?: number
 ): void {
+  if (!globalShouldNotify) {
+    return
+  }
+
   const shouldExecute = new Set() as Bucket
   let shouldNotify = true
-  // console.log('notify', target, key, op, newIndex)
 
   if (Array.isArray(target)) {
     if (hasChangedKeys(op)) {
@@ -202,10 +205,35 @@ export function cleanup(eff: Effect): void {
   }
 }
 
-export function preventTrack<T>(fn: () => T): T {
+/**
+ * **Unsafe Hook**
+ *
+ * Disable effect track globally while executing the block.
+ */
+export function useNotrack<T>(fn: () => T): T {
+  const oldShouldTrack = shouldTrack
   shouldTrack = false
   const returnValue = fn()
-  shouldTrack = true
+  shouldTrack = oldShouldTrack
+
+  return returnValue
+}
+
+/**
+ * **Unsafe Hook**
+ *
+ * Disable effect track and notify globally while executing the block.
+ */
+export function usePeek<T>(fn: () => T): T {
+  const oldShouldTrack = shouldTrack
+  const oldShouldNotify = globalShouldNotify
+  shouldTrack = false
+  globalShouldNotify = false
+
+  const returnValue = fn()
+
+  shouldTrack = oldShouldTrack
+  globalShouldNotify = oldShouldNotify
 
   return returnValue
 }

@@ -14,7 +14,8 @@ export {
   NotifyOps,
   schedule,
   cleanup,
-  preventTrack,
+  usePeek,
+  useNotrack,
   onCleanup,
 } from './effect'
 export { useMemo, isMemo } from './memo'

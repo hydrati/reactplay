@@ -1,4 +1,4 @@
-import { track, notify, NotifyOps, kIteration, preventTrack } from './effect'
+import { track, notify, NotifyOps, kIteration, useNotrack } from './effect'
 import { hasChanged, isPlainObject } from './utils'
 
 export const kReactive = Symbol('kReactive')
@@ -53,7 +53,7 @@ function createProxiedArrayMethods(): any {
   const arrayProxiedMethods: any = Object.create(null)
   for (const key of arrayPreventTrackMethods) {
     arrayProxiedMethods[key] = function (...args: any[]) {
-      return preventTrack(() => Array.prototype[key as any].apply(this, args))
+      return useNotrack(() => Array.prototype[key as any].apply(this, args))
     }
   }
 
