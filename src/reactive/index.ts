@@ -8,6 +8,7 @@ export {
   schedule,
   cleanup,
   preventTrack,
+  onCleanup,
 } from './effect'
 export { useMemo, isMemo } from './memo'
 export {
@@ -19,6 +20,14 @@ export {
   getReactiveRaw,
 } from './reactive'
 export { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
+export { watch, useEffect } from './watch'
+
+export type {
+  WatchCallback,
+  WatchOptions,
+  UseEffectCallback,
+  UseEffectOptions,
+} from './watch'
 export type { EffectScope } from './scope'
 export type { Optional } from './utils'
 export type {

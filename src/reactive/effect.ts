@@ -15,15 +15,17 @@ export const NotifyOps = {
 }
 
 export interface EffectOptions {
-  executor?: Executor
   scheduler?: Scheduler
   lazy?: boolean
+  onCleanup?: (eff: Effect) => void
+  onNotify?: (eff: Effect, target: any, key: any, op: any) => void
+  onTrack?: (eff: Effect, target: any, key: any) => void
 }
 
 export interface Effect<T = any> {
-  effect: EffectFn<T>
+  readonly effect: EffectFn<T>
   deps?: Set<Bucket>
-  options?: EffectOptions
+  readonly options?: EffectOptions
   oncleanup?: Set<() => void>
 }
 
@@ -58,12 +60,7 @@ export function execute<T>(eff: Effect<T>): Optional<T> {
   activeEffect = eff
   effectStack.push(eff)
 
-  let returnValue: Optional<T>
-  if (eff.options?.executor != null) {
-    returnValue = eff.options.executor(eff)
-  } else {
-    returnValue = eff.effect()
-  }
+  const returnValue: Optional<T> = eff.effect()
 
   shouldTrack = oldShouldTrack
 
@@ -80,6 +77,14 @@ export function effect<T>(fn: EffectFn<T>, options?: EffectOptions): Effect<T> {
     activeScope[kScopeEffect].add(eff)
   }
 
+  if (options?.onCleanup != null) {
+    eff.oncleanup = new Set([
+      () => {
+        options?.onCleanup?.(eff)
+      },
+    ])
+  }
+
   if (options?.lazy !== true) {
     execute(eff)
   }
@@ -89,6 +94,8 @@ export function effect<T>(fn: EffectFn<T>, options?: EffectOptions): Effect<T> {
 
 export function track<T extends Target>(target: T, key: any): void {
   if (activeEffect == null || !shouldTrack) return
+
+  activeEffect.options?.onTrack?.(activeEffect, target, key)
 
   let store = targetMap.get(target)
   if (store == null) {
@@ -164,7 +171,10 @@ export function notify<T extends Target>(
     extractBucket(shouldExecute, target, key)
   }
 
-  shouldExecute.forEach((eff) => schedule(eff, op))
+  shouldExecute.forEach((eff) => {
+    eff.options?.onNotify?.(eff, target, key, op)
+    schedule(eff, op)
+  })
 }
 
 export function onCleanup(fn: () => void): Optional<() => void> {
