@@ -2,8 +2,14 @@ import { useSignal, useValue, useEffect } from './reactive'
 
 console.clear()
 
-const [count, setCount] = useValue(useSignal(0))
+function useCount(): () => void {
+  const [count, setCount] = useValue(useSignal(0))
 
-useEffect(() => console.log(count()))
+  useEffect(() => console.log(count())) // 0
 
-setCount((x) => x + 1)
+  return () => setCount((x) => x + 1)
+}
+
+const count = useCount()
+count() // 1
+count() // 2
