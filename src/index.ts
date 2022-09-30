@@ -11,5 +11,6 @@ function useCount(): () => void {
 }
 
 const count = useCount()
+
 count() // 1
 count() // 2

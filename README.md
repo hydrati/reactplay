@@ -1,94 +1,21 @@
 # reactivity
 Reactivity like Vue 3.x
 
-## Features
-- Typescript JSX Support
-- Components and Fragment
-- Dependency-Collect Reactivity
-- `Reactive` Object based on ES6 `Proxy`
-- `Ref` and `Computed` Objects
-- Functional Component
-- Partly Composition API
-- Output Native DOM Node
+```typescript
+import { useSignal, useValue, useEffect } from './reactive'
 
-## Examples
-```tsx
-import {
-  defineComponent,
-  reactive,
-  mount,
-  watch,
-  ref,
-} from './reactivity'
+console.clear()
 
-const NameInput = defineComponent(() => {
-  
-  const info = reactive<{
-    name: string,
-    age: number
-  }>({
-    name: "John",
-    age: 20
-  })
+function useCount(): () => void {
+  const [count, setCount] = useValue(useSignal(0))
 
-  watch([
-    () => info.name,
-    () => info.age
-  ], (old, newVal) => {
-    console.log(old, newVal, "watch")
-  })
+  useEffect(() => console.log(count())) // 0
 
-  const handleInputName = (ev: InputEvent) => {
-    info.name = (ev.target as HTMLInputElement)?.value ?? ""
-  }
+  return () => setCount((x) => x + 1)
+}
 
-  const handleInputAge = (ev: InputEvent) => {
-    info.age = parseInt((ev.target as HTMLInputElement)?.value ?? "")
-  }
+const count = useCount()
 
-  return (
-    <>
-      <p>Hi, My name is {() => info.name /* Make it reactive */}. I'm {() => info.age} years old.</p>
-      <p>Name: <input 
-          onInput={handleInputName}
-          value={info.name /* This is not reactive */}
-        />
-      </p>
-      <p>Age: <input 
-          onInput={handleInputAge} 
-          value={info.age}
-        />
-      </p>
-    </>
-  )
-})
-
-const Count = defineComponent(() => {
-  const count = ref(0)
-  const handleClick = () => count.value += 1
-
-  return (
-    <>
-      <p>Click times: {count}</p>
-      <button onClick={handleClick}>Click me! {count}</button>
-    </>
-  )
-})
-
-const Text = defineComponent<{
-  name: string
-}>((ctx) => (<h1>{ctx.props.name}</h1>))
-
-const App = defineComponent(() => (
-  <>
-    <Text name="hello" />
-    <Count />
-    <NameInput />
-  </>
-))
-
-mount('#app', <App />)
+count() // 1
+count() // 2
 ```
-
-## License
-MIT License, Copyright (c) Hydrogen
