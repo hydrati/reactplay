@@ -1,44 +1,77 @@
-import { effect, cleanup, EffectOptions } from './effect'
+import { effect, cleanup, EffectOptions, execute, schedule } from './effect'
 import { hasChanged, Optional, traverse, queueMicrotask } from './utils'
 
 export type WatchCallback<T> = (
   oldValue: T,
   newValue: T,
-  onInvalidate: (fn: () => void) => void
+  onInvalidate: (fn: () => void) => void,
+  stop: () => void
 ) => void
 
-export interface WatchOptions {
+export type WatchCallbackImmediate<T> = (
+  oldValue: Optional<T>,
+  newValue: T,
+  onInvalidate: (fn: () => void) => void,
+  stop: () => void
+) => void
+
+export interface WatchBasicOptions {
   flush?: 'sync' | 'post'
   shallow?: boolean
-  immediate?: boolean
   onNotify?: EffectOptions['onNotify']
   onTrack?: EffectOptions['onTrack']
   onCleanup?: EffectOptions['onCleanup']
 }
 
-export function watch<T>(
-  getter: () => T,
+export type WatchOptions = WatchOptions1 | WatchOptions2
+export type WatchOptions1 = WatchBasicOptions & { immediate?: false }
+export type WatchOptions2 = WatchBasicOptions & { immediate: true }
+
+export function useWatch<T>(
+  dep: () => T,
+  callback: WatchCallback<T>
+): () => void
+export function useWatch<T>(
+  dep: () => T,
   callback: WatchCallback<T>,
+  options: WatchOptions1
+): () => void
+export function useWatch<T>(
+  dep: () => T,
+  callback: WatchCallbackImmediate<T>,
+  options: WatchOptions2
+): () => void
+export function useWatch<T>(
+  dep: () => T,
+  callback: WatchCallbackImmediate<T>,
   options: WatchOptions = {}
 ): () => void {
-  getter = options?.shallow === true ? getter : () => traverse(getter())
+  const getter = options?.shallow === true ? dep : () => traverse(dep())
 
-  let oldValue: T
+  let oldValue: Optional<T>
   let onInvalidate: Optional<() => void>
   const setOnInvalidate = (fn: () => void): void => {
     onInvalidate = fn
   }
 
+  const stop = (): void => {
+    cleanup(eff)
+  }
+
   const emit = (): void => {
-    const newValue = eff.effect()
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const newValue = execute(eff)!
+
     if (hasChanged(oldValue, newValue)) {
       onInvalidate?.()
       onInvalidate = undefined
 
       if (options?.flush === 'post') {
-        queueMicrotask(() => callback(oldValue, newValue, setOnInvalidate))
+        queueMicrotask(() =>
+          callback(oldValue, newValue, setOnInvalidate, stop)
+        )
       } else {
-        callback(oldValue, newValue, setOnInvalidate)
+        callback(oldValue, newValue, setOnInvalidate, stop)
       }
       oldValue = newValue
     }
@@ -52,18 +85,22 @@ export function watch<T>(
     onCleanup: options?.onCleanup,
   })
 
-  if (options.immediate !== false) {
-    emit()
-  } else {
+  if (options.immediate !== true) {
     oldValue = getter()
+    schedule(eff)
+  } else {
+    schedule(eff)
   }
 
-  return () => {
-    cleanup(eff)
-  }
+  console.log(eff)
+
+  return stop
 }
 
-export type UseEffectCallback = (onInvalidate: (fn: () => void) => void) => void
+export type UseEffectCallback = (
+  onInvalidate: (fn: () => void) => void,
+  stop: () => void
+) => void
 
 export interface UseEffectOptions {
   flush?: 'sync' | 'post'
@@ -77,6 +114,7 @@ export function useEffect(
   options: UseEffectOptions = {}
 ): () => void {
   let onInvalidate: Optional<() => void>
+
   const setOnInvalidate = (fn: () => void): void => {
     onInvalidate = fn
   }
@@ -92,9 +130,13 @@ export function useEffect(
     }
   }
 
+  const stop = (): void => {
+    cleanup(eff)
+  }
+
   const eff = effect(
     () => {
-      callback(setOnInvalidate)
+      callback(setOnInvalidate, stop)
     },
     {
       scheduler: emit,
@@ -104,7 +146,5 @@ export function useEffect(
     }
   )
 
-  return () => {
-    cleanup(eff)
-  }
+  return stop
 }

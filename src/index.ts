@@ -1,16 +1,24 @@
-import { useSignal, useEffect } from './reactive'
+import { useSignal, useEffect, useScope, useWatch } from './reactive'
+
+console.clear()
 
 const count = useSignal(0)
 
-const stop = useEffect(() => {
-  console.log('new count', count.value)
-  if (count.value >= 3) {
-    console.log('stop!')
-    stop()
-  }
+const stop = useScope(() => {
+  useEffect((_, stop) =>
+    count.value >= 3 ? stop() : console.log('count', count.value)
+  )
+
+  useWatch(
+    () => count.value,
+    (oldValue, newValue) => console.log(`${oldValue} + 1 = ${newValue}`)
+  )
 })
 
-count.value += 1
-count.value += 1
-count.value += 1
-count.value += 1
+count.value += 1 // 1
+count.value += 1 // 2
+count.value += 1 // 3
+count.value += 1 // 4
+stop()
+count.value += 1 // 5
+count.value += 1 // 6

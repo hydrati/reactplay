@@ -1,4 +1,6 @@
-export type Optional<T> = NonNullable<T> | undefined
+import { Effect } from './effect'
+
+export type Optional<T> = T | undefined
 
 export function setSymbolTag(obj: any, tag: symbol, value: any = true): any {
   return Object.defineProperty(obj, tag, {
@@ -23,6 +25,18 @@ export function queueMicrotask(fn: () => void): void {
   Promise.resolve().then(fn)
 }
 
+export function isPlainObject(obj: object): boolean {
+  return (
+    typeof obj === 'object' &&
+    (Object.getPrototypeOf(obj) === Object.prototype ||
+      Object.getPrototypeOf(obj) === null)
+  )
+}
+
+export function syncEffectExecute<T>(eff: Effect<T>): T {
+  return eff.effect()
+}
+
 export function traverse<T>(value: T, history: Set<any> = new Set()): T {
   if (typeof value !== 'object' || value == null || history.has(value)) {
     return value
@@ -30,8 +44,19 @@ export function traverse<T>(value: T, history: Set<any> = new Set()): T {
 
   history.add(value)
 
-  for (const key in value) {
-    traverse(value[key], history)
+  if (Array.isArray(value)) {
+    for (const elem of value) {
+      traverse(elem, history)
+    }
+  } else if (isPlainObject(value)) {
+    for (const key in value) {
+      traverse(value[key], history)
+    }
+  } else {
+    console.warn('warn: traverse unknown objects')
+    for (const key in value) {
+      traverse(value[key], history)
+    }
   }
 
   return value

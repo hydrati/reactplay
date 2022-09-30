@@ -1,5 +1,5 @@
 import { track, notify, NotifyOps, kIteration, preventTrack } from './effect'
-import { hasChanged } from './utils'
+import { hasChanged, isPlainObject } from './utils'
 
 export const kReactive = Symbol('kReactive')
 export const kReactiveRaw = Symbol('kReactiveRaw')
@@ -37,7 +37,7 @@ export function createReactive<T extends object>(
     return obj
   } else if (Array.isArray(obj)) {
     return createReactiveArray(obj, shallow, readonly)
-  } else if (Object.getPrototypeOf(obj) === Object.prototype) {
+  } else if (isPlainObject(obj)) {
     return createReactiveObject(obj, shallow, readonly)
   } else {
     console.warn(

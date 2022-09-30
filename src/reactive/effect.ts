@@ -1,5 +1,5 @@
 import { activeScope, kScopeEffect } from './scope'
-import { Optional } from './utils'
+import { Optional, syncEffectExecute } from './utils'
 
 export type EffectFn<T = any> = () => T
 export type Executor<U = any> = <T = U>(effect: Effect<T>) => Optional<T>
@@ -16,6 +16,7 @@ export const NotifyOps = {
 
 export interface EffectOptions {
   scheduler?: Scheduler
+  executor?: Executor
   lazy?: boolean
   onCleanup?: (eff: Effect) => void
   onNotify?: (eff: Effect, target: any, key: any, op: any) => void
@@ -43,7 +44,7 @@ export type TargetMap = WeakMap<Target, Store>
 
 const targetMap: TargetMap = new WeakMap()
 
-export function schedule<T>(eff: Effect<T>, op: number): void {
+export function schedule<T>(eff: Effect<T>, op: number = NotifyOps.Set): void {
   if (eff.options?.scheduler != null) {
     eff.options?.scheduler(eff, op)
   } else {
@@ -51,7 +52,7 @@ export function schedule<T>(eff: Effect<T>, op: number): void {
   }
 }
 
-export function execute<T>(eff: Effect<T>): T {
+export function execute<T>(eff: Effect<T>): Optional<T> {
   cleanup(eff)
 
   const oldShouldTrack = shouldTrack
@@ -60,7 +61,9 @@ export function execute<T>(eff: Effect<T>): T {
   activeEffect = eff
   effectStack.push(eff)
 
-  const returnValue: T = eff.effect()
+  const returnValue = (eff.options?.executor ?? syncEffectExecute)?.(
+    eff
+  ) as Optional<T>
 
   shouldTrack = oldShouldTrack
 

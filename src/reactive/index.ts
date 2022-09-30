@@ -27,7 +27,7 @@ export {
   getReactiveRaw,
 } from './reactive'
 export { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
-export { watch, useEffect } from './watch'
+export { useWatch, useEffect } from './watch'
 
 // Type Export
 

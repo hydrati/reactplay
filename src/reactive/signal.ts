@@ -1,6 +1,11 @@
 import { notify, track } from './effect'
 import { getReactiveRaw } from './reactive'
-import { hasChanged, setSymbolTag, setToStringTag } from './utils'
+import {
+  hasChanged,
+  isPlainObject,
+  setSymbolTag,
+  setToStringTag,
+} from './utils'
 
 export const kSignal = Symbol('kSignal')
 export const kSignalRaw = Symbol('kSignalRaw')
@@ -101,7 +106,7 @@ export function toRefs<T extends object>(obj: T): Refs<T> {
       o[i] = toRef(obj, i as any)
     }
     return o as any
-  } else if (Object.getPrototypeOf(obj) === Object.prototype) {
+  } else if (isPlainObject(obj)) {
     const o = {} as any
     for (const key in raw) {
       o[key] = toRef(obj, key)
