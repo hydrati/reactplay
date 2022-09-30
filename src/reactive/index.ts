@@ -29,6 +29,8 @@ export {
 export { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
 export { watch, useEffect } from './watch'
 
+// Type Export
+
 export type {
   WatchCallback,
   WatchOptions,
