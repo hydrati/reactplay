@@ -29,7 +29,7 @@ export {
 } from './reactive'
 export { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
 export { useWatch, useEffect } from './watch'
-export { useValue, setValue } from './utils'
+export { useValue, setValue, getValue } from './utils'
 
 // Type Export
 

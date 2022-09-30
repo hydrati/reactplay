@@ -41,7 +41,23 @@ export interface Value<T> {
   readonly value: T
 }
 
-export function useValue<T>(val: Value<T>): T {
+export type Accessor<T> = [
+  getter: () => void,
+  setter: (fn: (value: T) => T) => void,
+  target: ValueMut<T>
+]
+
+export function useValue<T>(val: ValueMut<T>): Accessor<T> {
+  return [
+    () => getValue(val),
+    (f) => {
+      setValue<T>(val, f)
+    },
+    val,
+  ]
+}
+
+export function getValue<T>(val: Value<T>): T {
   return val.value
 }
 
