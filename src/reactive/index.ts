@@ -73,7 +73,7 @@ import type {
   Scheduler,
 } from './effect'
 import type { Signal, Refs, SignalOptions } from './signal'
-import type { Memo } from './memo'
+import type { Memo, MemoOptions } from './memo'
 
 export {
   useRefs,
@@ -131,4 +131,4 @@ export type { EffectScope }
 export type { Optional, Value, ValueAccessor, Accessor, Setter }
 export type { Effect, EffectFn, EffectOptions, Executor, Scheduler }
 export type { Signal, Refs, SignalOptions }
-export type { Memo }
+export type { Memo, MemoOptions }

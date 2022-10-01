@@ -1,4 +1,4 @@
-import { createMemo } from './memo'
+import { createMemo, MemoOptions } from './memo'
 import { SignalOptions, createSignal, createRef } from './signal'
 import {
   Accessor,
@@ -138,16 +138,22 @@ export function useSignal<T>(
 
 export type FunctionalMemo<T> = FunctionalReadonly<T>
 
-export function useMemo<T>(getter: () => T, initalValue?: T): FunctionalMemo<T>
+export function useMemo<T>(
+  getter: () => T,
+  initalValue?: T,
+  options?: MemoOptions<T>
+): FunctionalMemo<T>
 export function useMemo<T>(
   getter: (oldValue: T) => T,
-  initalValue: T
+  initalValue: T,
+  options?: MemoOptions<T>
 ): FunctionalMemo<T>
 export function useMemo<T>(
   getter: (oldValue?: T) => T,
-  initalValue?: T
+  initalValue?: T,
+  options?: MemoOptions<T>
 ): FunctionalMemo<T> {
-  return createFunctionalReadonly(createMemo(getter, initalValue))
+  return createFunctionalReadonly(createMemo(getter, initalValue, options))
 }
 
 export type FunctionalRef<T> = FunctionalValue<T>

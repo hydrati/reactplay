@@ -1,6 +1,6 @@
 import { track, notify, effect, execute, cleanup } from './effect'
 import { kSignal, kSignalRaw } from './signal'
-import { setStopFn, setSymbolTag, setToStringTag } from './utils'
+import { hasChanged, setStopFn, setSymbolTag, setToStringTag } from './utils'
 
 const kMemo = Symbol('kMemo')
 
@@ -12,23 +12,42 @@ export function isMemo(memo: any): boolean {
   return typeof memo === 'object' && memo[kMemo] === true
 }
 
-export function useMemo<T>(getter: () => T, initalValue?: T): Memo<T>
-export function useMemo<T>(getter: (oldValue: T) => T, initalValue: T): Memo<T>
-export function useMemo<T>(
-  getter: (oldValue?: T) => T,
-  initalValue?: T
-): Memo<T> {
-  return createMemo(getter)
+export interface MemoOptions<T> {
+  equals: false | ((oldValue: T, newValue: T) => boolean)
 }
 
-export function createMemo<T>(getter: () => T, initalValue?: T): Memo<T>
+export function useMemo<T>(
+  getter: () => T,
+  initalValue?: T,
+  options?: MemoOptions<T>
+): Memo<T>
+export function useMemo<T>(
+  getter: (oldValue: T) => T,
+  initalValue: T,
+  options?: MemoOptions<T>
+): Memo<T>
+export function useMemo<T>(
+  getter: (oldValue?: T) => T,
+  initalValue?: T,
+  options?: MemoOptions<T>
+): Memo<T> {
+  return createMemo(getter, initalValue, options)
+}
+
+export function createMemo<T>(
+  getter: () => T,
+  initalValue?: T,
+  options?: MemoOptions<T>
+): Memo<T>
 export function createMemo<T>(
   getter: (oldValue: T) => T,
-  initalValue: T
+  initalValue: T,
+  options?: MemoOptions<T>
 ): Memo<T>
 export function createMemo<T>(
   getter: (oldValue?: T) => T,
-  initalValue?: T
+  initalValue?: T,
+  options?: MemoOptions<T>
 ): Memo<T> {
   let value: T
   let dirty = true
@@ -47,11 +66,14 @@ export function createMemo<T>(
     },
   })
 
+  const changed =
+    typeof options?.equals === 'function' ? options?.equals : hasChanged
+
   const memo = {
     get value() {
       if (dirty) {
-        const newValue = execute(eff)
-        if (newValue != null) {
+        const newValue = execute(eff) as T
+        if (options?.equals === false || changed(value, newValue)) {
           value = newValue
         }
         dirty = false
