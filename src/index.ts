@@ -1,8 +1,14 @@
-import { useFnSignal, useEffect } from './reactive'
+import { useEffect, useDetachedScope } from './reactive'
+import { useSignal } from './reactive/functional'
 
-const count = useFnSignal(0)
+const count = useSignal(0)
 
-useEffect(() => console.log(count(), count.value, count.get()))
+const stop = useDetachedScope(() => {
+  useEffect(() => console.log(count())) // 0
+})
 
-count.set(1)
-count.set((x) => x + 1)
+count.set(1) // 1
+
+stop()
+
+count.set(2) // nothing
