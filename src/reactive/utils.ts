@@ -2,22 +2,28 @@ import { Effect } from './effect'
 
 const kStop = Symbol('kStop')
 
-export function useStop<T>(x: T): () => void {
+export function useStop<T>(x: T): [target: T, stop: () => void] {
   if (typeof x !== 'object' || typeof (x as any)[kStop] !== 'function') {
     if (typeof x === 'function') {
-      return () => {
-        x()
-      }
+      return [
+        x,
+        () => {
+          x()
+        },
+      ]
     }
 
-    return () => {}
+    return [x, () => {}]
   }
 
   const stop = (x as any)[kStop]
 
-  return () => {
-    stop()
-  }
+  return [
+    x,
+    () => {
+      stop()
+    },
+  ]
 }
 
 export function setStopFn(obj: any, stop: () => void): void {
@@ -71,31 +77,43 @@ export type Accessor<T> = [
   target: ValueMut<T>
 ]
 
+function extendStop<T>(target: T, source: any): T {
+  const [, stop] = useStop(source)
+  setStopFn(target, stop)
+  return target
+}
+
 export function useValue<T>(val: ValueMut<T>): Accessor<T> {
-  return [
-    () => getValue(val),
-    (f) => {
-      setValue<T>(val, f)
-    },
-    val,
-  ]
+  return extendStop(
+    [
+      () => getValue(val),
+      (f) => {
+        setValue<T>(val, f)
+      },
+      val,
+    ],
+    val
+  )
 }
 
 export function useGetter<T>(
   val: Value<T>
 ): [getter: () => T, target: Value<T>] {
-  return [() => getValue(val), val]
+  return extendStop([() => getValue(val), val], val)
 }
 
 export function useSetter<T>(
   val: ValueMut<T>
 ): [setter: (fn: (value: T) => T) => void, target: ValueMut<T>] {
-  return [
-    (f) => {
-      setValue<T>(val, f)
-    },
-    val,
-  ]
+  return extendStop(
+    [
+      (f) => {
+        setValue<T>(val, f)
+      },
+      val,
+    ],
+    val
+  )
 }
 
 export function getValue<T>(val: Value<T>): T {
