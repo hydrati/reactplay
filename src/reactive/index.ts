@@ -33,7 +33,6 @@ import {
   isReactive,
   getReactiveRaw,
 } from './reactive'
-
 import {
   useValue,
   setValue,
@@ -44,8 +43,8 @@ import {
 } from './utils'
 import { useWatch, useEffect } from './watch'
 import { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
-
 import * as functional from './functional'
+
 import type {
   FunctionalMemo,
   FunctionalReadonly,
@@ -59,6 +58,10 @@ import type {
   WatchOptions,
   UseEffectCallback,
   UseEffectOptions,
+  WatchCallbackImmediate,
+  WatchOptions1,
+  WatchOptions2,
+  WatchBasicOptions,
 } from './watch'
 import type { EffectScope } from './scope'
 import type { Optional, Value, ValueAccessor, Accessor, Setter } from './utils'
@@ -69,7 +72,7 @@ import type {
   Executor,
   Scheduler,
 } from './effect'
-import type { Signal, Refs } from './signal'
+import type { Signal, Refs, SignalOptions } from './signal'
 import type { Memo } from './memo'
 
 export {
@@ -105,6 +108,7 @@ export { useWatch, useEffect }
 export { useValue, setValue, getValue, useAccessor, useStop, useStopWith }
 export { functional }
 export { useFnMemo, useFnReadonlyRef, useFnRef, useFnSignal, useFnValue }
+
 export type {
   FunctionalMemo,
   FunctionalReadonly,
@@ -113,9 +117,18 @@ export type {
   FunctionalSignal,
   FunctionalValue,
 }
-export type { WatchCallback, WatchOptions, UseEffectCallback, UseEffectOptions }
+export type {
+  WatchCallback,
+  WatchOptions,
+  UseEffectCallback,
+  UseEffectOptions,
+  WatchCallbackImmediate,
+  WatchOptions1,
+  WatchOptions2,
+  WatchBasicOptions,
+}
 export type { EffectScope }
 export type { Optional, Value, ValueAccessor, Accessor, Setter }
 export type { Effect, EffectFn, EffectOptions, Executor, Scheduler }
-export type { Signal, Refs }
+export type { Signal, Refs, SignalOptions }
 export type { Memo }
