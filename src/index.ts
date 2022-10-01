@@ -1,19 +1,17 @@
-import { useSignal, useValue, useEffect, useGetter, useMemo } from './reactive'
+import { useEffect } from './reactive'
+import { useSignal } from './reactive/functional'
 
 console.clear()
 
-function useCount(): () => void {
-  const [count, setCount] = useValue(useSignal(0))
+function useCount() {
+  const count = useSignal(0)
+  console.log(count)
+  count()
 
-  const [output] = useGetter(useMemo(() => `Count: ${count()}`))
+  useEffect(() => console.log(count()))
 
-  useEffect(() => console.log(output())) // 0
-
-  return () => setCount((x) => x + 1)
+  return count
 }
 
 const count = useCount()
-
-count() // 1
-count() // 2
-count() // 3
+count.set((x) => x + 1)

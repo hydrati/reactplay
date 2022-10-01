@@ -2,7 +2,8 @@ export {
   useRefs,
   useSignal,
   getSignalRaw,
-  toRef,
+  useRef,
+  useReadonlyRef,
   toRefs,
   isSignal,
 } from './signal'
@@ -33,10 +34,12 @@ export {
   useValue,
   setValue,
   getValue,
-  useGetter,
-  useSetter,
+  useAccessor,
   useStop,
+  useStopWith,
 } from './utils'
+
+export * as functional from './functional'
 
 // Type Export
 
@@ -47,7 +50,7 @@ export type {
   UseEffectOptions,
 } from './watch'
 export type { EffectScope } from './scope'
-export type { Optional, Value, ValueMut } from './utils'
+export type { Optional, Value, ValueAccessor, Accessor, Setter } from './utils'
 export type {
   Effect,
   EffectFn,

@@ -26,12 +26,38 @@ export function getSignalRaw<T>(sig: Signal<T>): T {
   return (sig as any)[kSignalRaw]
 }
 
-export function useSignal<T>(initalValue: T): Signal<T> {
-  return createSignal(initalValue)
+export interface SignalOptions<T> {
+  equals: false | ((oldValue: T, newValue: T) => boolean)
 }
 
-export function createSignal<T>(initalValue: T): Signal<T> {
+export function useSignal<T>(
+  initalValue: Signal<T>,
+  options?: SignalOptions<T>
+): Signal<T>
+export function useSignal<T>(
+  initalValue: T,
+  options?: SignalOptions<T>
+): Signal<T>
+export function useSignal<T>(
+  initalValue: T | Signal<T>,
+  options?: SignalOptions<T>
+): Signal<T> {
+  return createSignal(
+    isSignal(initalValue)
+      ? getSignalRaw(initalValue as any)
+      : (initalValue as any),
+    options
+  )
+}
+
+export function createSignal<T>(
+  initalValue: T,
+  options?: SignalOptions<T>
+): Signal<T> {
   let value = initalValue
+
+  const equals =
+    typeof options?.equals === 'function' ? options.equals : hasChanged
 
   const sig = {
     get value() {
@@ -42,7 +68,7 @@ export function createSignal<T>(initalValue: T): Signal<T> {
       return value
     },
     set value(newValue: T) {
-      if (hasChanged(value, newValue)) {
+      if (options?.equals === false || equals(value, newValue)) {
         value = newValue
         notify(sig, 'value')
       }
@@ -55,9 +81,10 @@ export function createSignal<T>(initalValue: T): Signal<T> {
   return sig
 }
 
-export function toRef<T extends object, K extends keyof T>(
+export function createRef<T extends object, K extends keyof T>(
   obj: T,
-  key: K
+  key: K,
+  readonly: boolean = false
 ): Signal<T[K]> {
   const sig = {
     get value() {
@@ -67,7 +94,9 @@ export function toRef<T extends object, K extends keyof T>(
       return obj[key]
     },
     set value(newValue: T[K]) {
-      obj[key] = newValue
+      if (!readonly) {
+        obj[key] = newValue
+      }
     },
   }
 
@@ -75,6 +104,20 @@ export function toRef<T extends object, K extends keyof T>(
   setToStringTag(sig, 'Ref')
 
   return sig
+}
+
+export function useReadonlyRef<T extends object, K extends keyof T>(
+  obj: T,
+  key: K
+): Signal<T[K]> {
+  return createRef(obj, key, true)
+}
+
+export function useRef<T extends object, K extends keyof T>(
+  obj: T,
+  key: K
+): Signal<T[K]> {
+  return createRef(obj, key)
 }
 
 export type Refs<T extends object> = {
@@ -103,13 +146,13 @@ export function toRefs<T extends object>(obj: T): Refs<T> {
   if (Array.isArray(raw)) {
     const o = []
     for (const i of raw.keys()) {
-      o[i] = toRef(obj, i as any)
+      o[i] = useRef(obj, i as any)
     }
     return o as any
   } else if (isPlainObject(obj)) {
     const o = {} as any
     for (const key in raw) {
-      o[key] = toRef(obj, key)
+      o[key] = useRef(obj, key)
     }
     return o
   } else {
@@ -118,7 +161,7 @@ export function toRefs<T extends object>(obj: T): Refs<T> {
     )
     const o = {} as any
     for (const key in obj) {
-      o[key] = toRef(obj, key)
+      o[key] = useRef(obj, key)
     }
     return o
   }

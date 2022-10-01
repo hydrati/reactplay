@@ -8,7 +8,7 @@ export function useStop<T>(x: T): [target: T, stop: () => void] {
       return [
         x,
         () => {
-          x()
+          typeof (x as any)[kStop] !== 'function' ? x() : (x as any)[kStop]()
         },
       ]
     }
@@ -68,66 +68,52 @@ export function syncEffectExecute<T>(eff: Effect<T>): T {
 }
 
 export interface Value<T> {
-  readonly value: T
+  value: T
 }
 
-export type Accessor<T> = [
-  getter: () => T,
-  setter: (fn: (value: T) => T) => void,
-  target: ValueMut<T>
+export type Accessor<T> = () => T
+
+export type Setter<T> = (n: ((oldValue: T) => T) | T) => T
+
+export type ValueAccessor<T> = [
+  getter: Accessor<T>,
+  setter: Setter<T>,
+  target: Value<T>
 ]
 
-function extendStop<T>(target: T, source: any): T {
+export function useStopWith<T>(target: T, source: any): T {
   const [, stop] = useStop(source)
   setStopFn(target, stop)
   return target
 }
 
-export function useValue<T>(val: ValueMut<T>): Accessor<T> {
-  return extendStop(
-    [
-      () => getValue(val),
-      (f) => {
-        setValue<T>(val, f)
-      },
-      val,
-    ],
+export function useValue<T>(val: Value<T>): ValueAccessor<T> {
+  return useStopWith(
+    [() => getValue(val), ((f) => setValue<T>(val, f)) as Setter<T>, val],
     val
   )
 }
 
-export function useGetter<T>(
+export function useAccessor<T>(
   val: Value<T>
-): [getter: () => T, target: Value<T>] {
-  return extendStop([() => getValue(val), val], val)
-}
-
-export function useSetter<T>(
-  val: ValueMut<T>
-): [setter: (fn: (value: T) => T) => void, target: ValueMut<T>] {
-  return extendStop(
-    [
-      (f) => {
-        setValue<T>(val, f)
-      },
-      val,
-    ],
-    val
-  )
+): [getter: Accessor<T>, target: Value<T>] {
+  return useStopWith([() => getValue(val), val], val)
 }
 
 export function getValue<T>(val: Value<T>): T {
   return val.value
 }
 
-export interface ValueMut<T> {
-  value: T
-}
+export function setValue<T>(v: Value<T>, newVal: ((oldValue: T) => T) | T): T {
+  const oldValue = v.value
 
-export function setValue<T>(v: ValueMut<T>, fn: (value: T) => T): T {
-  const newVal = fn(v.value)
-  v.value = newVal
-  return newVal
+  if (typeof newVal === 'function') {
+    v.value = (newVal as any)(oldValue)
+  } else {
+    v.value = newVal
+  }
+
+  return oldValue
 }
 
 export function traverse<T>(value: T, history: Set<any> = new Set()): T {
