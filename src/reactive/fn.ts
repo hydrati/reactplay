@@ -8,6 +8,8 @@ import {
   Value,
 } from './utils'
 
+const kFunctionalValue = Symbol('kFunctionValue')
+
 // eslint-disable-next-line @typescript-eslint/prefer-function-type, @typescript-eslint/consistent-type-definitions
 type Callable = { (): void }
 
@@ -49,11 +51,15 @@ function createRedirectHandler(target: any) {
 }
 
 export function createFunctionalValue<T>(val: Value<T>): FunctionalValue<T> {
-  const [value, setValue] = createValue(val)
+  const [value, setValue] = createValue(getFunctionalValuwRaw(val))
 
   return new Proxy(value, {
     get(target, key, recv) {
       if (typeof key === 'symbol') {
+        if (key === kFunctionalValue) {
+          return val
+        }
+
         return Reflect.get(target, key, recv)
       }
 
@@ -93,10 +99,14 @@ export function useValue<T>(
 export function createFunctionalReadonly<T>(
   val: Value<T>
 ): FunctionalReadonly<T> {
-  const [value] = useAccessor(val)
+  const [value] = useAccessor(getFunctionalValuwRaw(val))
   return new Proxy(val, {
     get(target, key, recv) {
       if (typeof key === 'symbol') {
+        if (key === kFunctionalValue) {
+          return val
+        }
+
         return Reflect.get(target, key, recv)
       }
 
@@ -156,4 +166,20 @@ export function useReadonlyRef<T extends object, K extends keyof T>(
   key: K
 ): FunctionalReadonlyRef<T[K]> {
   return createFunctionalValue(createRef(obj, key, true))
+}
+
+export function isFunctionalValue(o: any): boolean {
+  if (o[kFunctionalValue] != null) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export function getFunctionalValuwRaw<T>(o: any): Value<T> {
+  if (o[kFunctionalValue] != null) {
+    return o[kFunctionalValue]
+  } else {
+    return o
+  }
 }

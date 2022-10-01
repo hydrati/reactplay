@@ -1,16 +1,21 @@
-import { useFnSignal, useEffect } from './reactive'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import { ref, watchEffect } from './reactive/vue'
 
 console.clear()
 
 function useCount() {
-  const count = useFnSignal(0)
-  console.log(count)
-  count()
+  const count = ref(0)
 
-  useEffect(() => console.log(count()))
+  console.log(count)
+
+  watchEffect(() => console.log(count.value))
 
   return count
 }
 
 const count = useCount()
-count.set((x) => x + 1)
+
+count.value += 1
+count.value += 1
+count.value += 1
+count.value += 1
