@@ -1,4 +1,11 @@
-export {
+import {
+  useMemo as useFnMemo,
+  useReadonlyRef as useFnReadonlyRef,
+  useRef as useFnRef,
+  useSignal as useFnSignal,
+  useValue as useFnValue,
+} from './functional'
+import {
   useRefs,
   useSignal,
   getSignalRaw,
@@ -7,6 +14,73 @@ export {
   toRefs,
   isSignal,
 } from './signal'
+import {
+  effect,
+  execute,
+  track,
+  notify,
+  NotifyOps,
+  schedule,
+  cleanup,
+  onCleanup,
+} from './effect'
+import { useMemo, isMemo } from './memo'
+import {
+  useReactive,
+  useReadonly,
+  useShallowReactive,
+  useShallowReadonly,
+  isReactive,
+  getReactiveRaw,
+} from './reactive'
+
+import {
+  useValue,
+  setValue,
+  getValue,
+  useAccessor,
+  useStop,
+  useStopWith,
+} from './utils'
+import { useWatch, useEffect } from './watch'
+import { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
+
+import * as functional from './functional'
+import type {
+  FunctionalMemo,
+  FunctionalReadonly,
+  FunctionalReadonlyRef,
+  FunctionalRef,
+  FunctionalSignal,
+  FunctionalValue,
+} from './functional'
+import type {
+  WatchCallback,
+  WatchOptions,
+  UseEffectCallback,
+  UseEffectOptions,
+} from './watch'
+import type { EffectScope } from './scope'
+import type { Optional, Value, ValueAccessor, Accessor, Setter } from './utils'
+import type {
+  Effect,
+  EffectFn,
+  EffectOptions,
+  Executor,
+  Scheduler,
+} from './effect'
+import type { Signal, Refs } from './signal'
+import type { Memo } from './memo'
+
+export {
+  useRefs,
+  useSignal,
+  getSignalRaw,
+  useRef,
+  useReadonlyRef,
+  toRefs,
+  isSignal,
+}
 export {
   effect,
   execute,
@@ -15,11 +89,9 @@ export {
   NotifyOps,
   schedule,
   cleanup,
-  usePeek,
-  useNotrack,
   onCleanup,
-} from './effect'
-export { useMemo, isMemo } from './memo'
+}
+export { useMemo, isMemo }
 export {
   useReactive,
   useReadonly,
@@ -27,36 +99,23 @@ export {
   useShallowReadonly,
   isReactive,
   getReactiveRaw,
-} from './reactive'
-export { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
-export { useWatch, useEffect } from './watch'
-export {
-  useValue,
-  setValue,
-  getValue,
-  useAccessor,
-  useStop,
-  useStopWith,
-} from './utils'
-
-export * as functional from './functional'
-
-// Type Export
-
+}
+export { useDetachedScope, useScope, createScope, onScopeDipose }
+export { useWatch, useEffect }
+export { useValue, setValue, getValue, useAccessor, useStop, useStopWith }
+export { functional }
+export { useFnMemo, useFnReadonlyRef, useFnRef, useFnSignal, useFnValue }
 export type {
-  WatchCallback,
-  WatchOptions,
-  UseEffectCallback,
-  UseEffectOptions,
-} from './watch'
-export type { EffectScope } from './scope'
-export type { Optional, Value, ValueAccessor, Accessor, Setter } from './utils'
-export type {
-  Effect,
-  EffectFn,
-  EffectOptions,
-  Executor,
-  Scheduler,
-} from './effect'
-export type { Signal, Refs } from './signal'
-export type { Memo } from './memo'
+  FunctionalMemo,
+  FunctionalReadonly,
+  FunctionalReadonlyRef,
+  FunctionalRef,
+  FunctionalSignal,
+  FunctionalValue,
+}
+export type { WatchCallback, WatchOptions, UseEffectCallback, UseEffectOptions }
+export type { EffectScope }
+export type { Optional, Value, ValueAccessor, Accessor, Setter }
+export type { Effect, EffectFn, EffectOptions, Executor, Scheduler }
+export type { Signal, Refs }
+export type { Memo }
