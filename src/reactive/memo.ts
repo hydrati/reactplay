@@ -9,7 +9,7 @@ export interface Memo<T> {
 }
 
 export function isMemo(memo: any): boolean {
-  return typeof memo === 'object' && memo[kMemo] === true
+  return memo[kMemo] === true
 }
 
 export interface MemoOptions<T> {

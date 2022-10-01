@@ -60,7 +60,7 @@ export function createFunctionalValue<T>(val: Value<T>): FunctionalValue<T> {
           return val
         }
 
-        return Reflect.get(target, key, recv)
+        return Reflect.get(val, key, recv)
       }
 
       if (key === 'get') {
@@ -71,14 +71,14 @@ export function createFunctionalValue<T>(val: Value<T>): FunctionalValue<T> {
         return setValue
       }
 
-      return Reflect.get(target, key, recv)
+      return Reflect.get(val, key, recv)
     },
     set(target, key, newValue, recv) {
       if (target === recv && (key === 'set' || key === 'get')) {
         return false
       }
 
-      return Reflect.set(target, key, newValue, recv)
+      return Reflect.set(val, key, newValue, recv)
     },
     ...createRedirectHandler(val),
   }) as any
@@ -100,28 +100,28 @@ export function createFunctionalReadonly<T>(
   val: Value<T>
 ): FunctionalReadonly<T> {
   const [value] = useAccessor(getFunctionalValuwRaw(val))
-  return new Proxy(val, {
+  return new Proxy(value, {
     get(target, key, recv) {
       if (typeof key === 'symbol') {
         if (key === kFunctionalValue) {
           return val
         }
 
-        return Reflect.get(target, key, recv)
+        return Reflect.get(val, key, recv)
       }
 
       if (key === 'get') {
         return value
       }
 
-      return Reflect.get(target, key, recv)
+      return Reflect.get(val, key, recv)
     },
     set(target, key, newValue, recv) {
       if (target === recv && (key === 'set' || key === 'get')) {
         return false
       }
 
-      return Reflect.set(target, key, newValue, recv)
+      return Reflect.set(val, key, newValue, recv)
     },
     ...createRedirectHandler(val),
   }) as any

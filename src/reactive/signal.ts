@@ -15,7 +15,7 @@ export interface Signal<T> {
 }
 
 export function isSignal(sig: any): boolean {
-  return typeof sig === 'object' && sig[kSignal] === true
+  return sig[kSignal] === true
 }
 
 export function getSignalRaw<T>(sig: Signal<T>): T {
