@@ -1,8 +1,8 @@
-import { useSignal, useEffect } from './reactive'
+import { useFnSignal, useEffect } from './reactive'
 
-const count = useSignal(0)
+const count = useFnSignal(0)
 
-useEffect(() => console.log(count.value))
+useEffect(() => console.log(count(), count.value, count.get()))
 
-count.value += 1
-count.value += 1
+count.set(1)
+count.set((x) => x + 1)

@@ -51,7 +51,7 @@ function createRedirectHandler(target: any) {
 }
 
 export function createFunctionalValue<T>(val: Value<T>): FunctionalValue<T> {
-  const [value, setValue] = createValue(getFunctionalValuwRaw(val))
+  const [value, setValue] = createValue(getFunctionalValueRaw(val))
 
   return new Proxy(value, {
     get(target, key, recv) {
@@ -99,7 +99,7 @@ export function useValue<T>(
 export function createFunctionalReadonly<T>(
   val: Value<T>
 ): FunctionalReadonly<T> {
-  const [value] = useAccessor(getFunctionalValuwRaw(val))
+  const [value] = useAccessor(getFunctionalValueRaw(val))
   return new Proxy(value, {
     get(target, key, recv) {
       if (typeof key === 'symbol') {
@@ -182,7 +182,7 @@ export function isFunctionalValue(o: any): boolean {
   }
 }
 
-export function getFunctionalValuwRaw<T>(o: any): Value<T> {
+export function getFunctionalValueRaw<T>(o: any): Value<T> {
   if (o[kFunctionalValue] != null) {
     return o[kFunctionalValue]
   } else {
