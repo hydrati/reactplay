@@ -1,5 +1,29 @@
 import { Effect } from './effect'
 
+const kStop = Symbol('kStop')
+
+export function useStop<T>(x: T): () => void {
+  if (typeof x !== 'object' || typeof (x as any)[kStop] !== 'function') {
+    if (typeof x === 'function') {
+      return () => {
+        x()
+      }
+    }
+
+    return () => {}
+  }
+
+  const stop = (x as any)[kStop]
+
+  return () => {
+    stop()
+  }
+}
+
+export function setStopFn(obj: any, stop: () => void): void {
+  setSymbolTag(obj, kStop, stop)
+}
+
 export type Optional<T> = T | undefined
 
 export function setSymbolTag(obj: any, tag: symbol, value: any = true): any {
@@ -42,7 +66,7 @@ export interface Value<T> {
 }
 
 export type Accessor<T> = [
-  getter: () => void,
+  getter: () => T,
   setter: (fn: (value: T) => T) => void,
   target: ValueMut<T>
 ]
@@ -50,6 +74,23 @@ export type Accessor<T> = [
 export function useValue<T>(val: ValueMut<T>): Accessor<T> {
   return [
     () => getValue(val),
+    (f) => {
+      setValue<T>(val, f)
+    },
+    val,
+  ]
+}
+
+export function useGetter<T>(
+  val: Value<T>
+): [getter: () => T, target: Value<T>] {
+  return [() => getValue(val), val]
+}
+
+export function useSetter<T>(
+  val: ValueMut<T>
+): [setter: (fn: (value: T) => T) => void, target: ValueMut<T>] {
+  return [
     (f) => {
       setValue<T>(val, f)
     },

@@ -1,5 +1,5 @@
 import { cleanup, Effect } from './effect'
-import { Optional } from './utils'
+import { Optional, setStopFn } from './utils'
 
 export let activeScope: Optional<EffectScopeImpl>
 export const kScopeChildren = Symbol('kScopeChildren')
@@ -25,6 +25,8 @@ export class EffectScopeImpl {
     if (!detached) {
       activeScope?.[kScopeChildren].add(this)
     }
+
+    setStopFn(this, this.stop.bind(this))
   }
 
   run(fn: () => void): void {

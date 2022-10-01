@@ -1,5 +1,5 @@
-import { track, notify, effect, execute } from './effect'
-import { setSymbolTag, setToStringTag } from './utils'
+import { track, notify, effect, execute, cleanup } from './effect'
+import { setStopFn, setSymbolTag, setToStringTag } from './utils'
 
 const kMemo = Symbol('kMemo')
 
@@ -47,6 +47,9 @@ export function createMemo<T>(getter: () => T): Memo<T> {
 
   setSymbolTag(memo, kMemo)
   setToStringTag(memo, 'Memo')
+  setStopFn(memo, () => {
+    cleanup(eff)
+  })
 
   return memo
 }

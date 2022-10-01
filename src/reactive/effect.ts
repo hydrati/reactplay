@@ -1,5 +1,5 @@
 import { activeScope, kScopeEffect } from './scope'
-import { Optional, syncEffectExecute } from './utils'
+import { Optional, setStopFn, syncEffectExecute } from './utils'
 
 export type EffectFn<T = any> = () => T
 export type Executor<U = any> = <T = U>(effect: Effect<T>) => Optional<T>
@@ -77,6 +77,8 @@ export function effect<T>(fn: EffectFn<T>, options?: EffectOptions): Effect<T> {
   if (activeScope != null) {
     activeScope[kScopeEffect].add(eff)
   }
+
+  setStopFn(eff, () => cleanup(eff))
 
   if (options?.onCleanup != null) {
     eff.oncleanup = new Set([
