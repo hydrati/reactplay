@@ -140,7 +140,7 @@ export type FunctionalMemo<T> = FunctionalReadonly<T>
 
 export function useMemo<T>(
   getter: () => T,
-  initalValue?: T,
+  initalValue: undefined,
   options?: MemoOptions<T>
 ): FunctionalMemo<T>
 export function useMemo<T>(

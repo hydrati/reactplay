@@ -1,34 +1,11 @@
-import { ref, watchEffect, effectScope, Ref } from './reactive/vue'
+import { useMemo, useEffect, useSignal } from './reactive'
 
-console.clear()
+const add = useSignal(0)
+const count = useMemo((old) => add.value + 1, 0)
 
-function useCount(): readonly [Ref<number>, () => void] {
-  const count = ref(0)
+useEffect(() => console.log(count.value))
 
-  console.log(count)
-
-  const scope = effectScope()
-
-  watchEffect(() => console.log('a', count.value))
-
-  scope.run(() => {
-    watchEffect(() => console.log('b', count.value))
-    watchEffect(() => console.log('c', count.value))
-    watchEffect(() => console.log('d', count.value))
-  })
-
-  return [count, () => scope.stop()]
-}
-
-const [count, stop] = useCount()
-
-console.group('before')
-count.value += 1
-stop()
-console.groupEnd()
-
-console.group('after')
-count.value += 1
-count.value += 1
-count.value += 1
-console.groupEnd()
+add.value += 1
+add.value += 1
+add.value += 1
+add.value += 1

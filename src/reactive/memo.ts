@@ -18,7 +18,7 @@ export interface MemoOptions<T> {
 
 export function useMemo<T>(
   getter: () => T,
-  initalValue?: T,
+  initalValue: undefined,
   options?: MemoOptions<T>
 ): Memo<T>
 export function useMemo<T>(
