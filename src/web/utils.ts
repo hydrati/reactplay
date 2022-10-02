@@ -58,7 +58,7 @@ export function useComment(n: Node, c?: string | number): Comment | undefined {
   return o
 }
 
-export function replaceWith(target: Node, r: Node): Node {
+export function replaceWith(target: Node | Element, r: Node): Node {
   if (target instanceof Element) {
     target.replaceWith(r)
   } else {
@@ -75,4 +75,13 @@ export function useChildAt(target: Node, n: number): Node {
   }
 
   return o
+}
+
+export function useHTML(target: Node, innerHTML: string): Node {
+  if (target instanceof Element) {
+    target.innerHTML = innerHTML
+    return target
+  } else {
+    throw new Error('Target is not a element')
+  }
 }
