@@ -1,5 +1,12 @@
 import { useEffect, useSignal } from './reactive/functional'
-import { useDelegate, useEvent, useInsertText, useTemplate } from './web'
+import {
+  useDelegate,
+  useEvent,
+  useInsertText,
+  useTemplate,
+  useClass,
+  useStyle,
+} from './web'
 
 // 创建一个模板
 const tmpl0 = useTemplate(`<button><!0>`, 4)
@@ -21,6 +28,13 @@ function Count() {
       el, // 目标元素
       count, // 取值器
       0 // 目标占位符
+    )
+  )
+
+  // 设置样式
+  useEffect(
+    useStyle(el, () =>
+      count.value % 2 === 0 ? { color: 'black' } : { color: 'green' }
     )
   )
 

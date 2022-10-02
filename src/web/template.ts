@@ -2,7 +2,7 @@ export function useTemplate(
   html: string,
   code?: number,
   isSvg: boolean = false
-): () => Node {
+): () => Element {
   const t: HTMLTemplateElement = document.createElement('template')
   t.innerHTML = html
 
@@ -18,15 +18,19 @@ export function useTemplate(
     throw new Error('The browser resolved template HTML should not be empty.')
   }
 
-  return () => node.cloneNode(true)
+  if (!(node instanceof Element)) {
+    throw new TypeError('Template output HTML is not a Element')
+  }
+
+  return () => node.cloneNode(true) as Element
 }
 
-export function useFirstChild(node: Node): ChildNode | null
-export function useFirstChild(node: Node, must: true): ChildNode
-export function useFirstChild(node: Node, must: false): ChildNode | null
-export function useFirstChild(node: Node, must: boolean): ChildNode | null
+export function useFirstChild(node: Element): ChildNode | null
+export function useFirstChild(node: Element, must: true): ChildNode
+export function useFirstChild(node: Element, must: false): ChildNode | null
+export function useFirstChild(node: Element, must: boolean): ChildNode | null
 export function useFirstChild(
-  node: Node,
+  node: Element,
   must: boolean = false
 ): ChildNode | null {
   if (!must && node.firstChild == null) {

@@ -1,7 +1,7 @@
 import { useComment, valToString } from './utils'
 
 export function useInsertText<T>(
-  n: Node,
+  n: Element,
   v: () => T,
   c?: string | number
 ): () => void {
@@ -19,9 +19,13 @@ export function useInsertText<T>(
   }
 }
 
-export function useInsertAttr<T>(n: Node, k: string, v: () => T): () => void {
+export function useInsertAttr<T>(
+  n: Element,
+  k: string,
+  v: () => T
+): () => void {
   return () => {
-    const e = n as Element
+    const e = n
     if (typeof e.setAttribute === 'function') {
       e.setAttribute(k, valToString(v()))
     } else {
@@ -31,13 +35,13 @@ export function useInsertAttr<T>(n: Node, k: string, v: () => T): () => void {
 }
 
 export function useInsertAttrNS<T>(
-  n: Node,
+  n: Element,
   ns: string,
   k: string,
   v: () => T
 ): () => void {
   return () => {
-    const e = n as Element
+    const e = n
     if (typeof e.setAttribute === 'function') {
       e.setAttributeNS(k, ns, valToString(v()))
     }

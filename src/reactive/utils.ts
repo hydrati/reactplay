@@ -55,7 +55,7 @@ export function queueMicrotask(fn: () => void): void {
   Promise.resolve().then(fn)
 }
 
-export function isPlainObject(obj: object): boolean {
+export function isPlainObject(obj: object): obj is object {
   return (
     typeof obj === 'object' &&
     (Object.getPrototypeOf(obj) === Object.prototype ||
@@ -133,7 +133,7 @@ export function traverse<T>(value: T, history: Set<any> = new Set()): T {
     }
   } else {
     console.warn('warn: traverse unknown objects')
-    for (const key in value) {
+    for (const key in value as any) {
       traverse(value[key], history)
     }
   }

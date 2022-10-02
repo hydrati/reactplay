@@ -160,7 +160,7 @@ export function toRefs<T extends object>(obj: T): Refs<T> {
       'warn: create reactive objects from objects with unknown prototype'
     )
     const o = {} as any
-    for (const key in obj) {
+    for (const key in obj as any) {
       o[key] = useRef(obj, key)
     }
     return o
