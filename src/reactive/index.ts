@@ -34,10 +34,11 @@ import {
   getReactiveRaw,
 } from './reactive'
 import {
-  useValue,
-  setValue,
-  getValue,
-  useAccessor,
+  /* internals */
+  // useValue,
+  // setValue,
+  // getValue,
+  // useAccessor,
   useStop,
   useStopWith,
 } from './utils'
@@ -105,7 +106,7 @@ export {
 }
 export { useDetachedScope, useScope, createScope, onScopeDipose }
 export { useWatch, useEffect }
-export { useValue, setValue, getValue, useAccessor, useStop, useStopWith }
+export { useStop, useStopWith }
 export { functional }
 export { useFnMemo, useFnReadonlyRef, useFnRef, useFnSignal, useFnValue }
 
