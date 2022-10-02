@@ -56,17 +56,17 @@ import type {
   Executor,
   Scheduler,
 } from './effect'
-import type { Signal, Refs, SignalOptions } from './signal'
-import type { Memo, MemoOptions } from './memo'
+import type { Refs, SignalOptions } from './signal'
+import type { MemoOptions } from './memo'
 
 export { useReadonlyRef, useRef, useSignal, useValue } from './fn'
 export type {
-  FunctionalMemo,
+  FunctionalMemo as Memo,
   FunctionalReadonly,
-  FunctionalRef,
-  FunctionalSignal,
+  FunctionalRef as Ref,
+  FunctionalSignal as Signal,
   FunctionalValue,
-  FunctionalReadonlyRef,
+  FunctionalReadonlyRef as ReadonlyRef,
 } from './fn'
 
 export { useRefs, getSignalRaw, toRefs, isSignal }
@@ -107,5 +107,5 @@ export type {
 export type { EffectScope }
 export type { Optional, Value, ValueAccessor, Accessor, Setter }
 export type { Effect, EffectFn, EffectOptions, Executor, Scheduler }
-export type { Signal, Refs, SignalOptions }
-export type { Memo, MemoOptions }
+export type { Refs, SignalOptions }
+export type { MemoOptions }

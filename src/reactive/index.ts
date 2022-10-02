@@ -52,7 +52,7 @@ import type {
   FunctionalRef,
   FunctionalSignal,
   FunctionalValue,
-} from './functional'
+} from './fn'
 import type {
   WatchCallback,
   WatchOptions,
