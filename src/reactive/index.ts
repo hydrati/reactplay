@@ -44,7 +44,6 @@ import {
 } from './utils'
 import { useWatch, useEffect } from './watch'
 import { useDetachedScope, useScope, createScope, onScopeDipose } from './scope'
-import * as functional from './functional'
 
 import type {
   FunctionalMemo,
@@ -107,7 +106,6 @@ export {
 export { useDetachedScope, useScope, createScope, onScopeDipose }
 export { useWatch, useEffect }
 export { useStop, useStopWith }
-export { functional }
 export { useFnMemo, useFnReadonlyRef, useFnRef, useFnSignal, useFnValue }
 
 export type {

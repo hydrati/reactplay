@@ -1,19 +1,26 @@
-import { useEffect, useReactive } from './reactive'
+import { useEffect, useSignal } from './reactive/functional'
+import { useDelegate, useEvent, useInsertText, useTemplate } from './web'
+import { insertAt, useChildAt } from './web/utils'
 
-interface User {
-  name: string
-  password: string
+const tmpl0 = useTemplate(`<div><button><!0>`, 6)
+const tmpl1 = useTemplate(`<h1>Hello, world</h1>`, 3)
+
+function HelloWorld() {
+  return tmpl1()
 }
 
-const users = useReactive([] as User[])
+function Count() {
+  const count = useSignal(0)
+  const handleClick = () => count.set((x) => x + 1)
 
-useEffect(() => {
-  console.group('user effect')
-  for (const user of users) {
-    console.log(user)
-  }
-  console.groupEnd()
-})
+  const element = insertAt(tmpl0(), HelloWorld(), 0)
 
-users.push({ name: 'Tom', password: '114514' })
-console.log(users)
+  useEffect(useInsertText(useChildAt(element, 1), count, 0))
+
+  useEvent(element, 'click', handleClick)
+  useDelegate(element, 'click')
+
+  return element
+}
+
+document.querySelector('#app')?.append(Count())

@@ -11,7 +11,7 @@ import {
 const kFunctionalValue = Symbol('kFunctionValue')
 
 // eslint-disable-next-line @typescript-eslint/prefer-function-type, @typescript-eslint/consistent-type-definitions
-type Callable = { (): void }
+type Callable<T> = { (): T }
 
 export interface FunctionalValueObject<T> {
   readonly get: Accessor<T>
@@ -19,14 +19,14 @@ export interface FunctionalValueObject<T> {
   value: T
 }
 
-export type FunctionalValue<T> = Callable & FunctionalValueObject<T>
+export type FunctionalValue<T> = Callable<T> & FunctionalValueObject<T>
 
 export interface FunctionalReadonlyObject<T> {
   readonly get: () => T
   readonly value: T
 }
 
-export type FunctionalReadonly<T> = Callable & FunctionalReadonlyObject<T>
+export type FunctionalReadonly<T> = Callable<T> & FunctionalReadonlyObject<T>
 
 function createRedirectHandler(target: any) {
   const proxyKeys = [
