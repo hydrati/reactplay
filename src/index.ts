@@ -1,15 +1,19 @@
-import { useEffect, useDetachedScope, onScopeDipose } from './reactive'
-import { useSignal } from './reactive/functional'
+import { useEffect, useReactive } from './reactive'
 
-const count = useSignal(0)
+interface User {
+  name: string
+  password: string
+}
 
-const stop = useDetachedScope(() => {
-  useEffect(() => console.log(count())) // 0
-  onScopeDipose(() => console.log('Scope Diposed!'))
+const users = useReactive([] as User[])
+
+useEffect(() => {
+  console.group('user effect')
+  for (const user of users) {
+    console.log(user)
+  }
+  console.groupEnd()
 })
 
-count.set(1) // 1
-
-stop()
-
-count.set(2) // nothing
+users.push({ name: 'Tom', password: '114514' })
+console.log(users)
