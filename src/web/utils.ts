@@ -77,11 +77,12 @@ export function useChildAt(target: Node, n: number): Node {
   return o
 }
 
-export function useHTML(target: Node, innerHTML: string): Node {
+export function useHTML(target: Node, innerHTML: string, check = false): Node {
   if (target instanceof Element) {
     target.innerHTML = innerHTML
-    return target
-  } else {
+  } else if (check) {
     throw new Error('Target is not a element')
   }
+
+  return target
 }
