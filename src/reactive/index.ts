@@ -1,11 +1,4 @@
 import {
-  useMemo as useFnMemo,
-  useReadonlyRef as useFnReadonlyRef,
-  useRef as useFnRef,
-  useSignal as useFnSignal,
-  useValue as useFnValue,
-} from './functional'
-import {
   useRefs,
   useSignal,
   getSignalRaw,
@@ -24,7 +17,6 @@ import {
   cleanup,
   onCleanup,
 } from './effect'
-import { useMemo, isMemo } from './memo'
 import {
   useReactive,
   useReadonly,
@@ -75,6 +67,14 @@ import type {
 } from './effect'
 import type { Signal, Refs, SignalOptions } from './signal'
 import type { Memo, MemoOptions } from './memo'
+export { useMemo, isMemo } from './memo'
+export {
+  useMemo as useFnMemo,
+  useReadonlyRef as useFnReadonlyRef,
+  useRef as useFnRef,
+  useSignal as useFnSignal,
+  useValue as useFnValue,
+} from './fn'
 
 export {
   useRefs,
@@ -95,7 +95,7 @@ export {
   cleanup,
   onCleanup,
 }
-export { useMemo, isMemo }
+
 export {
   useReactive,
   useReadonly,
@@ -107,7 +107,6 @@ export {
 export { useDetachedScope, useScope, createScope, onScopeDipose }
 export { useWatch, useEffect }
 export { useStop, useStopWith }
-export { useFnMemo, useFnReadonlyRef, useFnRef, useFnSignal, useFnValue }
 
 export type {
   FunctionalMemo,
