@@ -71,6 +71,7 @@ import type {
   EffectOptions,
   Executor,
   Scheduler,
+  Bucket,
 } from './effect'
 import type { Signal, Refs, SignalOptions } from './signal'
 import type { Memo, MemoOptions } from './memo'
@@ -128,6 +129,6 @@ export type {
 }
 export type { EffectScope }
 export type { Optional, Value, ValueAccessor, Accessor, Setter }
-export type { Effect, EffectFn, EffectOptions, Executor, Scheduler }
+export type { Effect, EffectFn, EffectOptions, Executor, Scheduler, Bucket }
 export type { Signal, Refs, SignalOptions }
 export type { Memo, MemoOptions }
