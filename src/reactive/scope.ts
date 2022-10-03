@@ -6,14 +6,18 @@ export const kScopeChildren = Symbol('kScopeChildren')
 export const kScopeEffect = Symbol('kScopeEffect')
 export const kScopeDiposeCallback = Symbol('kScopeDiposeCallback')
 
-export function onScopeDipose(fn: () => void): Optional<() => void> {
+export function onScopeDipose(fn: () => void): () => void {
   if (activeScope != null) {
     const scope = activeScope
     scope[kScopeDiposeCallback].add(fn)
     return () => {
-      scope[kScopeDiposeCallback].delete(fn)
+      if (scope[kScopeDiposeCallback].has(fn)) {
+        scope[kScopeDiposeCallback].delete(fn)
+      }
     }
   }
+
+  return () => {}
 }
 
 export class EffectScopeImpl {

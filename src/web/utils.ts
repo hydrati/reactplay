@@ -106,15 +106,11 @@ export function toKebab(camel: string): string {
   }
 }
 
-export type AppendElement =
-  | Node
-  | string
-  | (() => AppendElement)
-  | AppendElement[]
+export type VElement = Node | string | (() => VElement) | VElement[]
 
 export type Fragment = DocumentFragment
 
-export function useFragment(...children: AppendElement[]): Fragment {
+export function useFragment(...children: VElement[]): Fragment {
   const template = document.createElement('template')
   return useAppend(template.content, ...children)
 }
@@ -150,9 +146,14 @@ const kComment = Symbol('kComment')
 export { kFragment as Fragment, kComment as Comment }
 
 export function h(
+  tag: string,
+  props?: Record<string, any | (() => any)> | null,
+  ...children: VElement[] | Array<() => VElement>
+): () => Element
+export function h(
   tag: typeof kFragment,
   props?: null | {},
-  ...children: AppendElement[] | Array<() => AppendElement>
+  ...children: VElement[] | Array<() => VElement>
 ): () => Fragment
 export function h(
   tag: typeof kComment,
@@ -160,14 +161,9 @@ export function h(
   ...children: [any]
 ): () => Comment
 export function h(
-  tag: string,
-  props?: Record<string, any | (() => any)> | null,
-  ...children: AppendElement[] | Array<() => AppendElement>
-): () => Element
-export function h(
   tag: string | symbol,
   props?: Record<string, any | (() => any)> | null,
-  ...children: AppendElement[] | Array<() => AppendElement> | [any]
+  ...children: VElement[] | Array<() => VElement> | [any]
 ): () => Node {
   if (typeof tag === 'symbol') {
     if (tag === kFragment) {
@@ -209,7 +205,7 @@ export function h(
 
 export function useAppend<T extends Node>(
   target: T,
-  ...children: AppendElement[]
+  ...children: VElement[]
 ): T {
   for (const child of children) {
     if (child instanceof Node) {

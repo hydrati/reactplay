@@ -2,7 +2,8 @@ export * from './template'
 export * from './event'
 export * from './reactive'
 export * from './style'
-export type { AppendElement } from './utils'
+export type { VElement } from './utils'
+export * from './component'
 export {
   useAppend,
   useFragment,
