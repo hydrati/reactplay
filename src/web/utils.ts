@@ -145,11 +145,40 @@ export function createComment(c: any): Comment {
   return document.createComment(c)
 }
 
+const kFragment = Symbol('kFragment')
+const kComment = Symbol('kComment')
+export { kFragment as Fragment, kComment as Comment }
+
+export function h(
+  tag: typeof kFragment,
+  props?: null | {},
+  ...children: AppendElement[] | Array<() => AppendElement>
+): () => Fragment
+export function h(
+  tag: typeof kComment,
+  props?: null | {},
+  ...children: [any]
+): () => Comment
 export function h(
   tag: string,
   props?: Record<string, any | (() => any)> | null,
   ...children: AppendElement[] | Array<() => AppendElement>
-): () => Element {
+): () => Element
+export function h(
+  tag: string | symbol,
+  props?: Record<string, any | (() => any)> | null,
+  ...children: AppendElement[] | Array<() => AppendElement> | [any]
+): () => Node {
+  if (typeof tag === 'symbol') {
+    if (tag === kFragment) {
+      return () => useFragment(...children)
+    } else if (tag === kComment) {
+      return () => createComment(valToString(children[0] ?? ''))
+    } else {
+      throw new Error('Not found this symbol element')
+    }
+  }
+
   const el = document.createElement(tag)
   const dynProps = props != null ? new Set<string>() : undefined
   if (props != null) {

@@ -3,16 +3,14 @@ import {
   useDelegate,
   useEvent,
   useInsertText,
-  // useTemplate,
   useStyle,
   useFragment,
-  h,
-  createComment,
+  useTemplate,
 } from './web'
 
 // 创建一个模板
-// const tmpl0 = useTemplate(`<button><!0>`, 4)
-const tmpl0 = h('button', null, createComment('0'))
+const tmpl0 = useTemplate(`<button><!0>`, 4)
+// const tmpl0 = h('button', null, h(Comment, null, '0'))
 
 function Count() {
   // 创建一个 Signal

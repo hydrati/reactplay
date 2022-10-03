@@ -1,10 +1,10 @@
 const activeEvent = new WeakMap<any, Set<string>>()
 const handlers = new WeakMap<any, Map<string, (...args: any[]) => any>>()
 
-export function useDelegate(n: Element, ...events: string[]) {
+export function useDelegate(n: Element, ...events: string[]): () => void {
   const handler = handlers.get(n)
   if (handler == null) {
-    return
+    return () => {}
   }
 
   let active = activeEvent.get(n)
@@ -22,6 +22,8 @@ export function useDelegate(n: Element, ...events: string[]) {
       }
     }
   }
+
+  return () => disposeDelegate(n, ...events)
 }
 
 export function disposeDelegate(n: Element, ...events: string[]) {
@@ -55,5 +57,8 @@ export function useEvent(n: Element, event: string, f?: (...args: any) => any) {
     handlers.set(n, handler)
   }
 
-  if (f != null) handler?.set(event, f)
+  if (handler != null) {
+    if (f == null) handler.delete(event)
+    else handler?.set(event, f)
+  }
 }

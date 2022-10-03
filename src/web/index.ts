@@ -15,4 +15,6 @@ export {
   replaceAt,
   replaceChild,
   replaceWith,
+  Comment,
+  Fragment,
 } from './utils'
