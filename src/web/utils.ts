@@ -1,3 +1,6 @@
+import { useEffect } from '../reactive'
+import { useInsertAttr } from './reactive'
+
 export function valToString(v: any): string {
   if (typeof v === 'string') {
     return v
@@ -6,17 +9,6 @@ export function valToString(v: any): string {
     return valToString(v.toString())
   }
   return Object.prototype.toString.call(v)
-}
-
-export function appendChild(
-  target: Element,
-  ...children: Array<Node | Node[]>
-): Element {
-  for (const child of children) {
-    if (Array.isArray(child)) appendChild(target, ...child)
-    else target.appendChild(child)
-  }
-  return target
 }
 
 export function insertBefore(
@@ -28,41 +20,34 @@ export function insertBefore(
   return target
 }
 
-export function insertAt(
-  target: Element,
-  child: Node | Element,
-  n: number
-): Element {
+export function insertAt<T extends Node>(target: T, child: Node, n: number): T {
   if (n > target.childNodes.length - 1) {
-    appendChild(target, child)
+    useAppend(target, child)
   } else {
     target.insertBefore(child, useChildAt(target, n))
   }
   return target
 }
 
-export function replaceAt(
-  target: Element,
-  child: Node | Element,
+export function replaceAt<T extends Node>(
+  target: T,
+  child: Node,
   n: number
-): Element {
+): T {
   target.replaceChild(useChildAt(target, n), child)
   return target
 }
 
-export function replaceChild(
-  target: Element,
-  old: Node | Element,
-  child: Node | Element
-): Element {
+export function replaceChild<T extends Node>(
+  target: T,
+  old: Node,
+  child: Node
+): T {
   target.replaceChild(old, child)
   return target
 }
 
-export function useComment(
-  n: Element,
-  c?: string | number
-): Comment | undefined {
+export function useComment(n: Node, c?: string | number): Comment | undefined {
   let o: Comment | undefined
   for (let i = n.firstChild; i != null; i = i.nextSibling) {
     if (
@@ -77,7 +62,7 @@ export function useComment(
   return o
 }
 
-export function replaceWith(target: Element | Element, r: Element): Element {
+export function replaceWith(target: Element, r: Element): Element {
   if (target instanceof Element) {
     target.replaceWith(r)
   } else {
@@ -87,7 +72,7 @@ export function replaceWith(target: Element | Element, r: Element): Element {
   return r
 }
 
-export function useChildAt(target: Element, n: number): ChildNode {
+export function useChildAt<T extends Node>(target: T, n: number): ChildNode {
   const o = target.childNodes.item(n)
   if (o == null) {
     throw new Error(`Not found child at ${n}`)
@@ -96,11 +81,11 @@ export function useChildAt(target: Element, n: number): ChildNode {
   return o
 }
 
-export function useHTML(
-  target: Element,
+export function useHTML<T extends Element>(
+  target: T,
   innerHTML: string,
   check = false
-): Element {
+): T {
   if (target instanceof Element) {
     target.innerHTML = innerHTML
   } else if (check) {
@@ -119,4 +104,94 @@ export function toKebab(camel: string): string {
       .map((v) => v.toLowerCase())
       .join('-')
   }
+}
+
+export type AppendElement =
+  | Node
+  | string
+  | (() => AppendElement)
+  | AppendElement[]
+
+export type Fragment = DocumentFragment
+
+export function useFragment(...children: AppendElement[]): Fragment {
+  const template = document.createElement('template')
+  return useAppend(template.content, ...children)
+}
+
+export function setAttribute<E extends Element>(n: E, k: string, v: any): E {
+  n.setAttribute(k, valToString(v))
+  return n
+}
+
+export function setAttributeNS<E extends Element>(
+  n: E,
+  ns: string,
+  k: string,
+  v: any
+): E {
+  n.setAttributeNS(ns, k, valToString(v))
+  return n
+}
+
+export function appendText<E extends Node>(n: E, ...text: any[]): E {
+  for (const t of text) {
+    n.appendChild(document.createTextNode(valToString(t)))
+  }
+  return n
+}
+
+export function createComment(c: any): Comment {
+  return document.createComment(c)
+}
+
+export function h(
+  tag: string,
+  props?: Record<string, any | (() => any)> | null,
+  ...children: AppendElement[] | Array<() => AppendElement>
+): () => Element {
+  const el = document.createElement(tag)
+  const dynProps = props != null ? new Set<string>() : undefined
+  if (props != null) {
+    for (const key in props) {
+      if (typeof props[key] !== 'function') {
+        setAttribute(el, key, props[key])
+      } else {
+        dynProps?.add(key)
+      }
+    }
+  }
+  return () => {
+    const e = el.cloneNode(true) as Element
+
+    if (props != null && dynProps != null) {
+      for (const key of dynProps) {
+        if (typeof props[key] === 'function') {
+          useEffect(useInsertAttr(e, key, props[key]))
+        }
+      }
+    }
+
+    useAppend(e, ...children)
+
+    return e
+  }
+}
+
+export function useAppend<T extends Node>(
+  target: T,
+  ...children: AppendElement[]
+): T {
+  for (const child of children) {
+    if (child instanceof Node) {
+      target.appendChild(child)
+    } else if (typeof child === 'string') {
+      target.appendChild(document.createTextNode(child))
+    } else if (Array.isArray(child)) {
+      child.forEach((v) => useAppend(target, v))
+    } else if (typeof child === 'function') {
+      useAppend(target, child())
+    }
+  }
+  return target
 }

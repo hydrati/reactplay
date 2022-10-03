@@ -3,13 +3,16 @@ import {
   useDelegate,
   useEvent,
   useInsertText,
-  useTemplate,
-  useClass,
+  // useTemplate,
   useStyle,
+  useFragment,
+  h,
+  createComment,
 } from './web'
 
 // 创建一个模板
-const tmpl0 = useTemplate(`<button><!0>`, 4)
+// const tmpl0 = useTemplate(`<button><!0>`, 4)
+const tmpl0 = h('button', null, createComment('0'))
 
 function Count() {
   // 创建一个 Signal
@@ -48,4 +51,4 @@ function Count() {
   return el
 }
 
-document.querySelector('#app')?.append(Count())
+document.querySelector('#app')?.append(useFragment(Count))

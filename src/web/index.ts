@@ -3,7 +3,10 @@ export * from './event'
 export * from './reactive'
 export * from './style'
 export {
-  appendChild,
+  useAppend,
+  useFragment,
+  h,
+  createComment,
   useChildAt,
   useComment,
   useHTML,
