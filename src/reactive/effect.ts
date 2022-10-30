@@ -1,11 +1,10 @@
-import { activeScope, kScopeEffect } from './scope'
+import { activeScope } from './scope'
 import { Optional, setStopFn, syncEffectExecute } from './utils'
+import { kIterator, kScopeEffect } from './constants'
 
 export type EffectFn<T = any> = () => T
 export type Executor<U = any> = <T = U>(effect: Effect<T>) => Optional<T>
 export type Scheduler<U = any> = <T = U>(effect: Effect<T>, op: number) => void
-
-export const kIteration = Symbol('kIteration')
 
 export const NotifyOps = {
   Set: 0,
@@ -172,7 +171,7 @@ export function notify<T extends Target>(
       }
     }
   } else if (hasChangedKeys(op)) {
-    extractBucket(shouldExecute, target, kIteration)
+    extractBucket(shouldExecute, target, kIterator)
   }
 
   if (shouldNotify) {

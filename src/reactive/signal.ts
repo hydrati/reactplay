@@ -1,3 +1,4 @@
+import { kSignal, kSignalRaw } from './constants'
 import { notify, track } from './effect'
 import { getReactiveRaw } from './reactive'
 import {
@@ -6,9 +7,6 @@ import {
   setSymbolTag,
   setToStringTag,
 } from './utils'
-
-export const kSignal = Symbol('kSignal')
-export const kSignalRaw = Symbol('kSignalRaw')
 
 export interface Signal<T> {
   value: T

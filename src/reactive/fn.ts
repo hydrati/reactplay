@@ -1,3 +1,4 @@
+import { kFunctionalValue } from './constants'
 import { createMemo, MemoOptions } from './memo'
 import { SignalOptions, createSignal, createRef } from './signal'
 import {
@@ -7,8 +8,6 @@ import {
   useValue as createValue,
   Value,
 } from './utils'
-
-const kFunctionalValue = Symbol('kFunctionValue')
 
 export type FunctionalValue<T> = (() => T) & {
   readonly get: Accessor<T>

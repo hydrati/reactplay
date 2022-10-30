@@ -1,10 +1,8 @@
 import { cleanup, Effect } from './effect'
 import { Optional, setStopFn } from './utils'
+import { kScopeDiposeCallback, kScopeChildren, kScopeEffect } from './constants'
 
 export let activeScope: Optional<EffectScopeImpl>
-export const kScopeChildren = Symbol('kScopeChildren')
-export const kScopeEffect = Symbol('kScopeEffect')
-export const kScopeDiposeCallback = Symbol('kScopeDiposeCallback')
 
 export function onScopeDipose(fn: () => void): () => void {
   if (activeScope != null) {

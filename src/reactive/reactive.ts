@@ -1,8 +1,6 @@
-import { track, notify, NotifyOps, kIteration, useNotrack } from './effect'
+import { kIterator, kReactive, kReactiveRaw } from './constants'
+import { track, notify, NotifyOps, useNotrack } from './effect'
 import { hasChanged, isPlainObject } from './utils'
-
-export const kReactive = Symbol('kReactive')
-export const kReactiveRaw = Symbol('kReactiveRaw')
 
 export function isReactive(obj: any): boolean {
   return typeof obj === 'object' && obj[kReactive] === true
@@ -126,7 +124,7 @@ export function createReactiveArray<T extends unknown[]>(
       return returnValue
     },
     ownKeys(target) {
-      track(target, Array.isArray(target) ? 'length' : kIteration)
+      track(target, Array.isArray(target) ? 'length' : kIterator)
       return Reflect.ownKeys(target)
     },
     has(target, key) {
@@ -194,7 +192,7 @@ export function createReactiveObject<T extends object>(
       return returnValue
     },
     ownKeys(target) {
-      track(target, kIteration)
+      track(target, kIterator)
       return Reflect.ownKeys(target)
     },
     has(target, key) {

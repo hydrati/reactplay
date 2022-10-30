@@ -1,8 +1,6 @@
+import { kMemo, kSignal, kSignalRaw } from './constants'
 import { track, notify, effect, execute, cleanup } from './effect'
-import { kSignal, kSignalRaw } from './signal'
 import { hasChanged, setStopFn, setSymbolTag, setToStringTag } from './utils'
-
-const kMemo = Symbol('kMemo')
 
 export interface Memo<T> {
   readonly value: T
